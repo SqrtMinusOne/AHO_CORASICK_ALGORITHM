@@ -1,11 +1,45 @@
 package ru.eltech.ahocorasick.alg;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.ArrayList; //TODO: Custom ArrayList
+import java.util.HashMap; //TODO: Custom HashMap
 import java.util.Objects;
 
 /**
- * TODO: Node JavaDoc
+ * Node is used for storing singular units of Aho-Corasick automate. <br>
+ * Public methods:
+ * <ul>
+ *     <li>{@link #Node()} - default constructor</li>
+ *     <li>{@link #addSon(Node, char)} </li>
+ *     <li>{@link #getSon(char)}</li>
+ *     <li>{@link #getSon()} </li>
+ *     <li>{@link #isSon(char)}</li>
+ *     <li>{@link #addTransition(Node, char)}</li>
+ *     <li>{@link #getGo()}</li>
+ *     <li>{@link #isTransitionBy(char)}</li>
+ *     <li>{@link #getTransitionBy(char)}</li>
+ *     <li>{@link #getParent()}</li>
+ *     <li>{@link #getSuffLink()}</li>
+ *     <li>{@link #setSuffLink(Node)}</li>
+ *     <li>{@link #getUp()}</li>
+ *     <li>{@link #setUp(Node)}</li>
+ *     <li>{@link #getCharToParent()}</li>
+ *     <li>{@link #isLeaf()}</li>
+ *     <li>{@link #getLeafPatternNumber()}</li>
+ *     <li>{@link #addLeaf(int)}</li>
+ * </ul>
+ *
+ * Private fields: //TODO: Remove private fields JavaDOc after development is finished
+ * <ul>
+ *     <li><b>HashMap son</b> - HashMap of children</li>
+ *     <li><b>HashMap go</b> - HashMap of already calculated transitions</li>
+ *     <li><b>Node parent</b> - link to the parent Node</li>
+ *     <li><b>Node suffLink</b> - saved suffix link from this Node</li>
+ *     <li><b>Node up</b>- saved compressed suffix link from this Node</li>
+ *     <li><b>char charToParent</b> - char for the transition from the parent to this Node</li>
+ *     <li><b>boolean isLeaf</b> - determines, if there is a string's end in this Node</li>
+ *     <li><b>ArrayList<Integer></b> - ArrayList with numbers of strings, which end here</li>
+ * </ul>
+ * @version 0.2
  */
 public class Node {
     public Node(){
@@ -18,8 +52,8 @@ public class Node {
 
     /**
      * Adds son to this node and sets up input node
-     * @param node
-     * @param charToParent
+     * @param node determines which Node son will be added as son
+     * @param charToParent determines char, by which son will be added
      */
     public void addSon(Node node, char charToParent){
         node.charToParent = charToParent;
@@ -46,8 +80,8 @@ public class Node {
     /**
      * Adds transition by some symbol from this node
      * This is used for lazy recursion
-     * @param node
-     * @param charToTransitive
+     * @param node determines Node, to which transition is going to be added
+     * @param charToTransitive determines char, by which transition to given Node is going to be added
      */
     public void addTransition(Node node, char charToTransitive){
         go.put(charToTransitive, node);
@@ -70,9 +104,8 @@ public class Node {
 
     //----------------------------------------
     private Node parent; //Link to parent
-    /**
-     * Returns parent of this node
-     * @return
+    /*
+     * @return parent of this node
      */
     public Node getParent() {
         return parent;
@@ -142,7 +175,7 @@ public class Node {
 
     /**
      * Adds number of string which ends in this state
-     * @param leafNumber
+     * @param leafNumber is number of string which ends here
      */
     public void addLeaf(int leafNumber){
         leafPatternNumber.add(leafNumber);
