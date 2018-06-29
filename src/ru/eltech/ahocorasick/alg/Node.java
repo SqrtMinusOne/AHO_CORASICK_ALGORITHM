@@ -38,9 +38,7 @@ public class Node {
         return son.containsKey(ch);
     }
 
-    public Node getSon(char ch){
-         return son.get(ch);
-    }
+    public Node getSon(char ch){ return son.get(ch); }
 
     //----------------------------------------
     private HashMap<Character, Node> go; //HashMap of transitions
@@ -148,6 +146,7 @@ public class Node {
      */
     public void addLeaf(int leafNumber){
         leafPatternNumber.add(leafNumber);
+        isLeaf = true;
     }
 
     @Override
@@ -162,5 +161,24 @@ public class Node {
     @Override
     public int hashCode() {
         return Objects.hash(parent, charToParent);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Node {");
+        if (parent == null){
+            sb.append("null");
+        }else {
+            sb.append(parent.charToParent).append("->").append(charToParent);
+        }
+        if (isLeaf()){
+            sb.append(": ");
+            for (int i : leafPatternNumber){
+                sb.append(i).append(" ");
+            }
+        }
+        sb.append("} ");
+        return sb.toString();
     }
 }
