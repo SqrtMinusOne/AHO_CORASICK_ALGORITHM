@@ -1,6 +1,7 @@
 package ru.eltech.ahocorasick.alg;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 /**
  * This class manages the automate of Aho-Corasick / the suffix bohr. <br>
@@ -31,21 +32,17 @@ import java.util.HashSet;
  * @see Node
  */
 public class Bohr {
-    private HashSet<Node> nodes; //Set of all nodes
-    private Node root; //Root node
-    private Node state; //Current state
-    private int leafNumber; //Terminal states counter
-
     /**
      *  Default constructor of Bohr
      */
     public Bohr(){
         root = new Node();
-        nodes = new HashSet<>();
+        nodes = new LinkedHashSet<>();
         nodes.add(root);
         state = root;
     }
 
+    //----------------------------------------
     /**
      * Returns HashSet with all nodes in this Bohr
      * @return HashSet
@@ -55,7 +52,7 @@ public class Bohr {
     }
 
     /**
-     * Checks if given Node is stored in this Borh
+     * Checks if given Node is stored in this Bohr
      * @param node - given Node
      *
      */
@@ -80,7 +77,6 @@ public class Bohr {
     }
 
     //----------------------------------------
-
     /**
      * Adds Node to the Bohr and configures it
      * @param where - parent Node
@@ -114,7 +110,6 @@ public class Bohr {
     }
 
     //----------------------------------------
-
     /**
      * Changes state of the automate by given symbol
      * @param ch - symbol for transition
@@ -123,28 +118,6 @@ public class Bohr {
     public Node getNextState(char ch){
         state = getLink(state, ch);
         return state;
-    }
-
-    /**
-     * Returns compressed suffix link from given Node
-     * @param node - required Node
-     * @return Node
-     */
-    public Node getUp(Node node){
-        Node link = node.getUp();
-        if (link == null){
-            if (node.isLeaf()) {
-                link = getSuffLink(node);
-            }
-            else if (getSuffLink(node) == root){
-                link = root;
-            }
-            else{
-                link = getUp(getSuffLink(node));
-            }
-            node.setUp(link);
-        }
-      return link;
     }
 
     /**
@@ -189,10 +162,53 @@ public class Bohr {
         return next;
     }
 
+    /**
+     * Returns compressed suffix link from given Node
+     * @param node - required Node
+     * @return Node
+     */
+    public Node getUp(Node node){
+        Node link = node.getUp();
+        if (link == null){
+            if (node.isLeaf()) {
+                link = getSuffLink(node);
+            }
+            else if (getSuffLink(node) == root){
+                link = root;
+            }
+            else{
+                link = getUp(getSuffLink(node));
+            }
+            node.setUp(link);
+        }
+        return link;
+    }
+
+    //----------------------------------------
+    /**
+     * Clears all calculated transitions for all Nodes
+     */
+    public void clearTransitions(){
+        for (Node node : nodes){
+            node.clearTransitions();
+        }
+        state = root;
+    }
+
+    /**
+     * Clears this Bohr
+     */
+    public void clear(){
+        nodes.clear();
+        root = new Node();
+        state = root;
+        leafNumber = 0;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Bohr: {");
+        sb.append("Bohr: {\n");
         for (Node node : nodes){
             if (node == root){
                 sb.append("[Root]");
@@ -200,9 +216,14 @@ public class Bohr {
             if (node == state){
                 sb.append("[Current]");
             }
-            sb.append(node.toString());
+            sb.append(node.toString()).append('\n');
         }
         sb.append("}");
         return sb.toString();
     }
+
+    private LinkedHashSet<Node> nodes; //Set of all nodes TODO: Custom HashSet
+    private Node root; //Root node
+    private Node state; //Current state
+    private int leafNumber; //Terminal states counter
 }

@@ -2,6 +2,7 @@ package ru.eltech.ahocorasick.alg;
 
 import java.util.ArrayList; //TODO: Custom ArrayList
 import java.util.HashMap; //TODO: Custom HashMap
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -28,7 +29,7 @@ import java.util.Objects;
  *     <li>{@link #addLeaf(int)}</li>
  * </ul>
  *
- * Private fields: //TODO: Remove private fields JavaDOc after development is finished
+ * Private fields: //TODO: Remove private fields JavaDoc after development is finished
  * <ul>
  *     <li><b>HashMap son</b> - HashMap of children</li>
  *     <li><b>HashMap go</b> - HashMap of already calculated transitions</li>
@@ -39,16 +40,18 @@ import java.util.Objects;
  *     <li><b>boolean isLeaf</b> - determines, if there is a string's end in this Node</li>
  *     <li><b>ArrayList<Integer></b> - ArrayList with numbers of strings, which end here</li>
  * </ul>
- * @version 0.2
+ * @version 0.4
  */
 public class Node {
+    /**
+     * Default constructor
+     */
     public Node(){
         son = new HashMap<>();
         go = new HashMap<>();
         leafPatternNumber = new ArrayList<>();
+        nodeNumber = nodesNumber++;
     }
-
-    private HashMap<Character, Node> son; //HashMap of children
 
     /**
      * Adds son to this node and sets up input node
@@ -68,14 +71,23 @@ public class Node {
         return son;
     }
 
+    /**
+     * Determines if there is son by given symbol
+     * @param ch required symbol
+     * @return boolean
+     */
     public boolean isSon(char ch){
         return son.containsKey(ch);
     }
 
+    /**
+     * Returns son by given symbol, if it exists
+     * @param ch required symbol
+     * @return Node or null
+     */
     public Node getSon(char ch){ return son.get(ch); }
 
     //----------------------------------------
-    private HashMap<Character, Node> go; //HashMap of transitions
 
     /**
      * Adds transition by some symbol from this node
@@ -94,16 +106,26 @@ public class Node {
         return go;
     }
 
+
+    /**
+     * Determines, if there is calculated transition by given symbol
+     * @param charToTransitive required symbol
+     * @return boolean
+     */
     public boolean isTransitionBy(char charToTransitive){
         return go.containsKey(charToTransitive);
     }
 
+    /**
+     * Returns transition by given symbol
+     * @param charToTransitive required symbol
+     * @return Node or null
+     */
     public Node getTransitionBy(char charToTransitive){
         return go.get(charToTransitive);
     }
 
     //----------------------------------------
-    private Node parent; //Link to parent
     /*
      * @return parent of this node
      */
@@ -112,7 +134,6 @@ public class Node {
     }
 
     //----------------------------------------
-    private Node suffLink; //Lazy recursion suffix link
 
     /**
      * Returns calculated suffix link from this node, if it exists
@@ -129,7 +150,6 @@ public class Node {
     }
 
     //----------------------------------------
-    private Node up; //Lazy recursion compressed suffix link
 
     /**
      * Returns calculated compressed suffix link from this node, if it exists
@@ -146,7 +166,6 @@ public class Node {
     }
 
     //----------------------------------------
-    private char charToParent; //Char to parent
 
     /**
      * Returns char to parent node
@@ -156,8 +175,6 @@ public class Node {
     }
 
     //----------------------------------------
-    private boolean isLeaf; //is it leaf
-    private ArrayList<Integer> leafPatternNumber;
 
     /**
      * Determines is this state terminal
@@ -182,6 +199,17 @@ public class Node {
         isLeaf = true;
     }
 
+    //----------------------------------------
+    /**
+     * Clears all calculated transitions for this Node
+     */
+    public void clearTransitions(){
+        go.clear();
+        suffLink = null;
+        up = null;
+    }
+
+    //----------------------------------------
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -199,14 +227,27 @@ public class Node {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Node {");
+        sb.append("Node {#").append(nodeNumber).append(" ");
         if (parent == null){
             sb.append("null");
         }else {
-            sb.append(parent.charToParent).append("->").append(charToParent);
+            sb.append(charToParent).append("->");
+        }
+        if (!son.isEmpty()){
+            for (Map.Entry<Character, Node> ent : son.entrySet()){
+                sb.append("(").append(ent.getKey().charValue()).append(": ")
+                        .append(ent.getValue().nodeNumber).append(")");
+            }
+        }
+        sb.append(" | ");
+        if (suffLink!=null){
+            sb.append("SL: ").append(suffLink.nodeNumber).append(" | ");
+        }
+        if (up!=null){
+            sb.append("CSL: ").append(up.nodeNumber).append(" | ");
         }
         if (isLeaf()){
-            sb.append(": ");
+            sb.append("END: ");
             for (int i : leafPatternNumber){
                 sb.append(i).append(" ");
             }
@@ -214,4 +255,15 @@ public class Node {
         sb.append("} ");
         return sb.toString();
     }
+
+    private static int nodesNumber;
+    private final int nodeNumber;
+    private HashMap<Character, Node> son; //HashMap of children
+    private HashMap<Character, Node> go; //HashMap of transitions
+    private Node parent; //Link to parent
+    private Node suffLink; //Lazy recursion suffix link
+    private Node up; //Lazy recursion compressed suffix link
+    private char charToParent; //Char to parent
+    private boolean isLeaf; //is it leaf
+    private ArrayList<Integer> leafPatternNumber;
 }
