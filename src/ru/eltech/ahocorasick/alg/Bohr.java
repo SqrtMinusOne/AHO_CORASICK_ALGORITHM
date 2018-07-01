@@ -1,7 +1,7 @@
 package ru.eltech.ahocorasick.alg;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * This class manages the automate of Aho-Corasick / the suffix bohr. <br>
@@ -37,9 +37,10 @@ public class Bohr {
      */
     public Bohr(){
         root = new Node();
-        nodes = new LinkedHashSet<>();
+        nodes = new ArrayList<>();
         nodes.add(root);
         state = root;
+        nodesNumber = 1;
     }
 
     //----------------------------------------
@@ -47,7 +48,7 @@ public class Bohr {
      * Returns HashSet with all nodes in this Bohr
      * @return HashSet
      */
-    public HashSet<Node> getNodes() {
+    ArrayList<Node> getNodes() {
         return nodes;
     }
 
@@ -83,9 +84,9 @@ public class Bohr {
      * @param ch - char for transition
      * @return Node
      */
-    public Node addNode( Node where, char ch){
+    public Node addNode(Node where, char ch){
         if (!where.isSon(ch)){
-            Node node = new Node();
+            Node node = new Node(nodesNumber++);
             where.addSon(node, ch);
             nodes.add(node);
             return node;
@@ -97,7 +98,7 @@ public class Bohr {
      * Adds whole String to this Bohr
      * @param str - required String
      */
-    public void addString(String str) {
+    public void addString(String str){
         Node cur = root;
         for (char ch : str.toCharArray()){
             Node son = cur.getSon(ch);
@@ -125,7 +126,7 @@ public class Bohr {
      * @param node - required Node
      * @return Node
      */
-    public Node getSuffLink(Node node){
+    private Node getSuffLink(Node node){
         Node link = node.getSuffLink();
         if (link == null){
             if ((node == root ) || (node.getParent() == root)) {
@@ -188,7 +189,7 @@ public class Bohr {
     /**
      * Clears all calculated transitions for all Nodes
      */
-    public void clearTransitions(){
+    void clearTransitions(){
         for (Node node : nodes){
             node.clearTransitions();
         }
@@ -198,17 +199,145 @@ public class Bohr {
     /**
      * Clears this Bohr
      */
-    public void clear(){
+    void clear(){
         nodes.clear();
         root = new Node();
         state = root;
         leafNumber = 0;
     }
 
+    public String[] getStringArray(){
+        String[] arr = new String[leafNumber];
+        for (Node node : nodes){
+            if (node.isLeaf()){
+                String str = getStringFromRoot(node);
+                for (int n : node.getLeafPatternNumber() ) {
+                    arr[n] = str;
+                }
+            }
+        }
+        return arr;
+    }
+
+    private String getStringFromRoot(Node node) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(node.getCharToParent());
+        for (Node node2 = node.getParent(); node2 != root; node2 = node2.getParent()){
+            sb.append(node2.getCharToParent());
+        }
+        sb.reverse();
+        return sb.toString();
+    }
+
+    /**
+     * Converts Bohr from string, received from Bohr.toString()<br>
+     * String is not checked for correctness
+     * @param str string, received from Bohr.toString()
+     * @return Bohr
+     */
+    public static Bohr fromString(String str){
+        Bohr bohr = new Bohr();
+        bohr.nodes.clear();
+        String[] arr = str.split("\n");
+        int ind = 1;
+        boolean stateFlag;
+        boolean rootFlag;
+        while (!arr[ind].startsWith("}")){
+            stateFlag = false;
+            rootFlag = false;
+            if (arr[ind].startsWith("[Root]")) {
+                arr[ind] = arr[ind].substring(6);
+                rootFlag = true;
+            }
+            if (arr[ind].startsWith("[Current]")){
+               stateFlag = true;
+               arr[ind] = arr[ind].substring(9);
+            }
+            Node node = Node.fromString(arr[ind]);
+            if (rootFlag)
+                bohr.root = node;
+            if (stateFlag)
+                bohr.state = node;
+            for (int n : node.getLeafPatternNumber())
+                if (n > bohr.leafNumber)
+                    bohr.leafNumber = n;
+            bohr.nodes.add(node.getNodeNumber(), node);
+            ind++;
+        }
+        bohr.leafNumber++;
+        bohr.solveDependencies();
+        return bohr;
+    }
+
+    /**
+     * Solves dependencies in Bohr by replacing temporary Nodes with real ones
+     */
+    private void solveDependencies(){
+        for (Node node : nodes){
+            if ((node.getSuffLink()!=null) && (node.getSuffLink().isTemp())){
+                node.setSuffLink(nodes.get(node.getSuffLink().getNodeNumber()));
+            }
+            if ((node.getUp()!=null) && (node.getUp().isTemp())){
+                node.setUp(nodes.get(node.getUp().getNodeNumber()));
+            }
+            for (Map.Entry<Character, Node> go : node.getGo().entrySet()){
+                if (go.getValue().isTemp()){
+                    node.getGo().replace(go.getKey(), go.getValue(), nodes.get(go.getValue().getNodeNumber()));
+                }
+            }
+            for (Map.Entry<Character, Node> son : node.getSon().entrySet()){
+                if (son.getValue().isTemp()){
+                    Node foundSon = nodes.get(son.getValue().getNodeNumber());
+                    node.getSon().replace(son.getKey(), son.getValue(),foundSon);
+                    foundSon.setParent(node);
+                }
+            }
+        }
+    }
+
+    public enum status {UNINITIALIZED, UNRESOLVED_DEPENDENCIES, OK}
+
+    /**
+     * Returns current status of Bohr.<br>
+     * <ul>
+     *     <li>UNINITIALIZED - Bohr was not initialized correctly or corrupted</li>
+     *     <li>UNRESOLVED_DEPENDENCIES - some dependencies were not resolved</li>
+     *     <li>OK - everything is fine</li>
+     * </ul>
+     * @return enum status {UNINITIALIZED, UNRESOLVED_DEPENDENCIES, OK}
+     */
+    public status getStatus(){
+        if ((root == null) || (nodes == null) || (nodes.isEmpty()))
+            return status.UNINITIALIZED;
+        for (Node node: nodes){
+            if ((node.getParent() == null) && (node != root))
+                return status.UNRESOLVED_DEPENDENCIES;
+            if ((node.getSuffLink()!=null) && (node.getSuffLink().isTemp())){
+                return status.UNRESOLVED_DEPENDENCIES;
+            }
+            if ((node.getUp()!=null) && (node.getUp().isTemp())){
+                return status.UNRESOLVED_DEPENDENCIES;
+            }
+            for (Map.Entry<Character, Node> go : node.getGo().entrySet()){
+                if (go.getValue().isTemp()){
+                    return status.UNRESOLVED_DEPENDENCIES;
+                }
+            }
+            for (Map.Entry<Character, Node> son : node.getSon().entrySet()){
+                if (son.getValue().isTemp()){
+                    return status.UNRESOLVED_DEPENDENCIES;
+                }
+            }
+        }
+        return status.OK;
+    }
+
+    //----------------------------------------
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Bohr: {\n");
+        sb.append("Bohr: {Nodes: ").append(nodes.size()).append(" \n");
         for (Node node : nodes){
             if (node == root){
                 sb.append("[Root]");
@@ -222,7 +351,8 @@ public class Bohr {
         return sb.toString();
     }
 
-    private LinkedHashSet<Node> nodes; //Set of all nodes TODO: Custom HashSet
+    private static int nodesNumber;
+    private ArrayList<Node> nodes; //Set of all nodes TODO: Custom HashSet
     private Node root; //Root node
     private Node state; //Current state
     private int leafNumber; //Terminal states counter

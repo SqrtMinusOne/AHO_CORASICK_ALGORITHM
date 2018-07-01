@@ -69,12 +69,12 @@ public class ConsoleAlgorithmProcessor {
     public void startConsole() {
         scanner = new Scanner(istream);
         String command;
-        StringHandler handler = new ExitHandler();
-        handler.addNext(new HelpHandler()).addNext(new AboutHandler()).addNext(new InitHandler()).
-                addNext(new ResetHandler()).addNext(new RestartHandler()).addNext(new PrintHandler()).
+        StringHandler handler = new HelpHandler();
+        handler.addNext(new ExitHandler()).addNext(new AboutHandler()).addNext(new InitHandler()).
+                addNext(new ResetHandler()).addNext(new RestartHandler()).addNext(new PrintBohrHandler()).
                 addNext(new AddHandler()).addNext(new SetTextHandler()).addNext(new TextHandler()).
                 addNext(new FileTextHandler()).addNext(new FileStringHandler()).addNext(new StepHandler()).
-                addNext(new ResultsHandler()).addNext(new FinishHandler());
+                addNext(new ResultsHandler()).addNext(new FinishHandler()).addNext(new PrintStringsHandler());
         handler.addNext(new DefaultHandler());
         do {
             ostream.print("AC> ");
@@ -154,6 +154,19 @@ public class ConsoleAlgorithmProcessor {
         }
     }
 
+    class PrintStringsHandler extends StringHandler{
+        PrintStringsHandler() {
+            super("print strings");
+        }
+
+        @Override
+        protected void doHandle(String request) {
+            for (String str : algorithm.getStrings()){
+                ostream.println(str);
+            }
+        }
+    }
+
     class ResetHandler extends StringHandler{
         ResetHandler() {
             super("reset");
@@ -176,9 +189,9 @@ public class ConsoleAlgorithmProcessor {
         }
     }
 
-    class PrintHandler extends StringHandler{
-        PrintHandler() {
-            super("print");
+    class PrintBohrHandler extends StringHandler{
+        PrintBohrHandler() {
+            super("print bohr");
         }
 
         @Override
@@ -194,7 +207,7 @@ public class ConsoleAlgorithmProcessor {
 
         @Override
         protected void doHandle(String request) {
-            algorithm.addString(command.substring(4));
+            algorithm.addString(request.substring(4));
         }
     }
 
@@ -205,7 +218,7 @@ public class ConsoleAlgorithmProcessor {
 
         @Override
         protected void doHandle(String request) {
-            algorithm.setText(command.substring(8));
+            algorithm.setText(request.substring(8));
         }
     }
 

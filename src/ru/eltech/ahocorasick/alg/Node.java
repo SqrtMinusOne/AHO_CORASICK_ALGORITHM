@@ -1,7 +1,7 @@
 package ru.eltech.ahocorasick.alg;
 
-import java.util.ArrayList; //TODO: Custom ArrayList
-import java.util.HashMap; //TODO: Custom HashMap
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -44,13 +44,32 @@ import java.util.Objects;
  */
 public class Node {
     /**
-     * Default constructor
+     * Default constructor for Node #0 <br>
+     * Number of node does not make any sense, unless the Node is in a Bohr or it is the root Node
      */
     public Node(){
+        this(0);
+    }
+
+    /**
+     * Constructor for Node
+     * @param number Number of constructed Node
+     */
+    public Node(int number){
+        this.nodeNumber = number;
+        this.leafPatternNumber = new ArrayList<>();
         son = new HashMap<>();
         go = new HashMap<>();
-        leafPatternNumber = new ArrayList<>();
-        nodeNumber = nodesNumber++;
+    }
+
+    /**
+     * Constructor for temporary Node
+     * @param number Number of constructed temporary Node
+     * @param temp State of temporariness
+     */
+    public Node (int number, boolean temp){
+        this(number);
+        this.temp = temp;
     }
 
     /**
@@ -80,6 +99,45 @@ public class Node {
         return son.containsKey(ch);
     }
 
+    //----------------------------------------
+    /*
+     * @return parent of this node
+     */
+    public Node getParent() {
+        return parent;
+    }
+
+    /**
+     * Returns char to parent node
+     */
+    public char getCharToParent() {
+        return charToParent;
+    }
+
+    /**
+     * Determines is this state terminal
+     */
+    public boolean isLeaf() {
+        return isLeaf;
+    }
+
+    /**
+     * Returns array of strings which ends in this state
+     */
+    public ArrayList<Integer> getLeafPatternNumber() {
+        return leafPatternNumber;
+    }
+
+    /**
+     * Adds number of string which ends in this state
+     * @param leafNumber is number of string which ends here
+     */
+    public void addLeaf(int leafNumber){
+        leafPatternNumber.add(leafNumber);
+        isLeaf = true;
+    }
+
+    private class NodeUnresolvedDependencyException extends RuntimeException{};
     /**
      * Returns son by given symbol, if it exists
      * @param ch required symbol
@@ -126,14 +184,6 @@ public class Node {
     }
 
     //----------------------------------------
-    /*
-     * @return parent of this node
-     */
-    public Node getParent() {
-        return parent;
-    }
-
-    //----------------------------------------
 
     /**
      * Returns calculated suffix link from this node, if it exists
@@ -166,47 +216,56 @@ public class Node {
     }
 
     //----------------------------------------
-
-    /**
-     * Returns char to parent node
-     */
-    public char getCharToParent() {
-        return charToParent;
-    }
-
-    //----------------------------------------
-
-    /**
-     * Determines is this state terminal
-     */
-    public boolean isLeaf() {
-        return isLeaf;
-    }
-
-    /**
-     * Returns array of strings which ends in this state
-     */
-    public ArrayList<Integer> getLeafPatternNumber() {
-        return leafPatternNumber;
-    }
-
-    /**
-     * Adds number of string which ends in this state
-     * @param leafNumber is number of string which ends here
-     */
-    public void addLeaf(int leafNumber){
-        leafPatternNumber.add(leafNumber);
-        isLeaf = true;
-    }
-
-    //----------------------------------------
     /**
      * Clears all calculated transitions for this Node
      */
-    public void clearTransitions(){
+    void clearTransitions(){
         go.clear();
         suffLink = null;
         up = null;
+    }
+
+    //----------------------------------------
+    /**
+     * Converts string to Node. Used for saving Node to file<br>
+     * This method creates temporary Nodes, which should be resolved later.
+     * However, this node itself does not need any additional operations. <br>
+     * The String is not checked for correctness.
+     * @param str Correct string, produced by Node.toString()
+     * @return Node
+     */
+    public static Node fromString(String str){
+        str = str.substring(7);
+        String[] arr = str.split(" ");
+        int ind = 0;
+        Node node = new Node(Integer.valueOf(arr[ind++]));
+        node.temp = false;
+        if (!arr[ind].startsWith("null")) {
+            node.charToParent = arr[ind].charAt(0);
+        }
+        ind += 2;
+        while (arr[ind].startsWith("(")){
+            char sonChar = arr[ind].charAt(1);
+            int sonInt = Integer.valueOf(arr[++ind].substring(0, arr[ind].length()-1));
+            node.addSon(new Node(sonInt, true), sonChar);
+            ind++;
+        }
+        ind++;
+        if (arr[ind].startsWith("SL:")){
+            node.setSuffLink(new Node(Integer.valueOf(arr[++ind]), true));
+            ind+=2;
+        }
+
+        if (arr[ind].startsWith("CSL:")){
+            node.setUp(new Node(Integer.valueOf(arr[++ind]), true));
+            ind+=2;
+        }
+        if (arr[ind].startsWith("END:")){
+            while (!arr[++ind].startsWith("}")){
+                node.addLeaf(Integer.valueOf(arr[ind]));
+            }
+        }
+        return node;
     }
 
     //----------------------------------------
@@ -228,18 +287,19 @@ public class Node {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Node {#").append(nodeNumber).append(" ");
-        if (parent == null){
+        if (charToParent == 0){
             sb.append("null");
         }else {
-            sb.append(charToParent).append("->");
+            sb.append(charToParent);
         }
+        sb.append(" ->[this]-> ");
         if (!son.isEmpty()){
             for (Map.Entry<Character, Node> ent : son.entrySet()){
                 sb.append("(").append(ent.getKey().charValue()).append(": ")
-                        .append(ent.getValue().nodeNumber).append(")");
+                        .append(ent.getValue().nodeNumber).append(") ");
             }
         }
-        sb.append(" | ");
+        sb.append("| ");
         if (suffLink!=null){
             sb.append("SL: ").append(suffLink.nodeNumber).append(" | ");
         }
@@ -248,22 +308,39 @@ public class Node {
         }
         if (isLeaf()){
             sb.append("END: ");
-            for (int i : leafPatternNumber){
+            for (int i : getLeafPatternNumber()){
                 sb.append(i).append(" ");
             }
+        }
+        if (isTemp()){
+            sb.append("TEMP ");
         }
         sb.append("} ");
         return sb.toString();
     }
 
-    private static int nodesNumber;
+    public boolean isTemp() {
+        return temp;
+    }
+
+    private boolean temp;
+
+    int getNodeNumber() {
+        return nodeNumber;
+    }
+
     private final int nodeNumber;
+
+    void setParent(Node parent) {
+        this.parent = parent;
+    }
+
+    private Node parent; //Link to parent
+    private char charToParent; //Char to parent
+    private ArrayList<Integer> leafPatternNumber;
+    private boolean isLeaf; //is it leaf
     private HashMap<Character, Node> son; //HashMap of children
     private HashMap<Character, Node> go; //HashMap of transitions
-    private Node parent; //Link to parent
     private Node suffLink; //Lazy recursion suffix link
     private Node up; //Lazy recursion compressed suffix link
-    private char charToParent; //Char to parent
-    private boolean isLeaf; //is it leaf
-    private ArrayList<Integer> leafPatternNumber;
 }

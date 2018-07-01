@@ -1,6 +1,7 @@
 package ru.eltech.ahocorasick.alg;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * This class implements logic of Aho-Corasick algorithm.
@@ -149,13 +150,28 @@ public class Algorithm { //TODO: Exceptions fix
 
     @Override
     public String toString() {
-        return "Algorithm {\n" +
-                bohr +
+        return  bohr +
                 "\ntextPosition = " + textPosition +
-                '}';
+                "\ntext = " + text +
+                "\n}";
+    }
+
+    public static Algorithm fromString(String str){
+        Algorithm alg = new Algorithm(Bohr.fromString(str));
+        String[] arr = str.split("\n");
+        alg.textPosition = Integer.valueOf(arr[arr.length-3].substring(15));
+        alg.text = arr[arr.length-2].substring(7);
+        alg.strings = new ArrayList<>();
+        Collections.addAll(alg.strings, alg.bohr.getStringArray());
+        return alg;
     }
 
     private Bohr bohr;
+
+    public ArrayList<String> getStrings() {
+        return strings;
+    }
+
     private ArrayList<String> strings;
     private ArrayList<AlgorithmResult> results;
     private String text;

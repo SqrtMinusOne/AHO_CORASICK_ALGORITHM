@@ -66,18 +66,24 @@ public class BohrTest {
 
     }
 
-    private static Bohr makeBorExample() {
+    static Bohr makeBorExample() {
         Bohr bohr = new Bohr();
         bohr.addString("he");
         bohr.addString("she");
         bohr.addString("his");
         bohr.addString("hers");
+        Assert.assertEquals(bohr.getStatus(), Bohr.status.OK);
         return bohr;
     }
 
     @Test
     public void bohrStateTest(){
         Bohr bohr = makeBorExample();
+        checkBohrExample(bohr);
+    }
+
+    public static void checkBohrExample(Bohr bohr) {
+        Assert.assertEquals(bohr.getStatus(), Bohr.status.OK);
         bohr.getNextState('h');
         bohr.getNextState('e');
         Assert.assertTrue(bohr.getState().isLeaf());
