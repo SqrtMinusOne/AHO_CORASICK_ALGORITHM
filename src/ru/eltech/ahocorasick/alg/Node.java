@@ -137,7 +137,6 @@ public class Node {
         isLeaf = true;
     }
 
-    private class NodeUnresolvedDependencyException extends RuntimeException{};
     /**
      * Returns son by given symbol, if it exists
      * @param ch required symbol
@@ -160,7 +159,7 @@ public class Node {
     /**
      * Shows HashMap with transitions from this node
      */
-    public HashMap<Character, Node> getGo() {
+    HashMap<Character, Node> getGo() {
         return go;
     }
 
@@ -299,6 +298,7 @@ public class Node {
                         .append(ent.getValue().nodeNumber).append(") ");
             }
         }
+
         sb.append("| ");
         if (suffLink!=null){
             sb.append("SL: ").append(suffLink.nodeNumber).append(" | ");

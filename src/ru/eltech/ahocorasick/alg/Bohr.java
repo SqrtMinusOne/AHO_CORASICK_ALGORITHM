@@ -207,6 +207,8 @@ public class Bohr {
     }
 
     public String[] getStringArray(){
+        if (corrupt_node)
+            return null;
         String[] arr = new String[leafNumber];
         for (Node node : nodes){
             if (node.isLeaf()){
@@ -253,7 +255,15 @@ public class Bohr {
                stateFlag = true;
                arr[ind] = arr[ind].substring(9);
             }
-            Node node = Node.fromString(arr[ind]);
+            Node node;
+            try {
+                node = Node.fromString(arr[ind]);
+            }
+            catch (Exception e){
+                node = null;
+                bohr.corrupt_node = true;
+                continue;
+            }
             if (rootFlag)
                 bohr.root = node;
             if (stateFlag)
@@ -287,15 +297,22 @@ public class Bohr {
             }
             for (Map.Entry<Character, Node> son : node.getSon().entrySet()){
                 if (son.getValue().isTemp()){
-                    Node foundSon = nodes.get(son.getValue().getNodeNumber());
-                    node.getSon().replace(son.getKey(), son.getValue(),foundSon);
-                    foundSon.setParent(node);
+                    try {
+                        Node foundSon = nodes.get(son.getValue().getNodeNumber());
+                        node.getSon().replace(son.getKey(), son.getValue(), foundSon);
+                        foundSon.setParent(node);
+                    }
+                    catch (Exception ignored){
+                    }
+
                 }
             }
         }
     }
 
-    public enum status {UNINITIALIZED, UNRESOLVED_DEPENDENCIES, OK}
+    private boolean corrupt_node;
+
+    public enum status {UNINITIALIZED, UNRESOLVED_DEPENDENCIES, CORRUPT_NODE, OK}
 
     /**
      * Returns current status of Bohr.<br>
@@ -309,6 +326,9 @@ public class Bohr {
     public status getStatus(){
         if ((root == null) || (nodes == null) || (nodes.isEmpty()))
             return status.UNINITIALIZED;
+        if (corrupt_node){
+            return status.CORRUPT_NODE;
+        }
         for (Node node: nodes){
             if ((node.getParent() == null) && (node != root))
                 return status.UNRESOLVED_DEPENDENCIES;

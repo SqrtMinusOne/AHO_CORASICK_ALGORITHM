@@ -38,18 +38,21 @@ public class SaveTest {
     @Test
     public void AlgorithmSaveTest(){
         Algorithm alg = new Algorithm(new Bohr());
-        alg.setText("abcdabcd");
+        alg.setText("abcdabcdabcdabcd");
         alg.addString("a");
         alg.addString("abc");
+        alg.addString("ab");
         alg.doStep();
         alg.doStep();
         String str = alg.toString();
         Algorithm alg2 = Algorithm.fromString(str);
+        Assert.assertTrue(alg2.getStatus().isOK());
         Assert.assertEquals(alg2.toString(), str);
         alg.restart();
         alg2.restart();
         alg.finishAlgorithm();
         alg2.finishAlgorithm();
         Assert.assertEquals(alg.getResults(), alg2.getResults());
+        Assert.assertEquals(alg.toString(), Algorithm.fromString(alg.toString()).toString());
     }
 }

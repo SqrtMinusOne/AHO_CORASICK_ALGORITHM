@@ -40,9 +40,10 @@ public class Algorithm { //TODO: Exceptions fix
      * Resets whole Algorithm
      */
     public void reset(){
-        bohr.clear();
-        strings.clear();
-        results.clear();
+        if (bohr!=null)
+            bohr.clear();
+        strings = new ArrayList<>();
+        results = new ArrayList<>();
         text = "";
         textPosition = 0;
     }
@@ -150,28 +151,130 @@ public class Algorithm { //TODO: Exceptions fix
 
     @Override
     public String toString() {
-        return  bohr +
-                "\ntextPosition = " + textPosition +
-                "\ntext = " + text +
-                "\n}";
+        StringBuilder sb = new StringBuilder();
+        sb.append(bohr.toString());
+        sb.append("\ntextPosition = ").append(textPosition);
+        sb.append("\ntext = ").append(text);
+        sb.append("\n").append(resultsToString());
+        return  sb.toString();
+
+    }
+
+    public String resultsToString(){
+        if (results == null)
+            return "null";
+        StringBuilder sb = new StringBuilder();
+        for (AlgorithmResult res : results) {
+            sb.append("[").append(res.getIndex()).append(":").append(res.getPatternNumber()).append("] ");
+        }
+        return sb.toString();
+    }
+
+    public static ArrayList<AlgorithmResult> resultsFromString(String str){
+        ArrayList<AlgorithmResult> res = new ArrayList<>();
+        String[] arr = str.split("[:\\[\\]]");
+        for (int i = 0; i < arr.length-2; i+=3){
+            AlgorithmResult newRes = new AlgorithmResult(
+                    Integer.valueOf(arr[i+1]),
+                    Integer.valueOf(arr[i+2])
+            );
+            res.add(newRes);
+        }
+        return res;
     }
 
     public static Algorithm fromString(String str){
         Algorithm alg = new Algorithm(Bohr.fromString(str));
         String[] arr = str.split("\n");
-        alg.textPosition = Integer.valueOf(arr[arr.length-3].substring(15));
-        alg.text = arr[arr.length-2].substring(7);
-        alg.strings = new ArrayList<>();
-        Collections.addAll(alg.strings, alg.bohr.getStringArray());
+        try {
+            alg.textPosition = Integer.valueOf(arr[arr.length - 3].substring(15));
+        }
+        catch (Exception e){
+            alg.textPosition = -1;
+        }
+        try {
+            alg.text = arr[arr.length - 2].substring(7);
+        }
+        catch (StringIndexOutOfBoundsException e){
+            alg.text = null;
+        }
+        try {
+            alg.results = resultsFromString(arr[arr.length - 1]);
+        }
+        catch (Exception e){
+            alg.results = null;
+        }
+        try {
+            alg.strings = new ArrayList<>();
+            Collections.addAll(alg.strings, alg.bohr.getStringArray());
+        }
+        catch (Exception e){
+            alg.strings = null;
+        }
         return alg;
     }
-
-    private Bohr bohr;
 
     public ArrayList<String> getStrings() {
         return strings;
     }
 
+    public class Algorithm_Status{
+        public Bohr.status getBohrStatus() {
+            return bohr.getStatus();
+        }
+        public boolean isTextPositionOK() {
+            return textPositionOK;
+        }
+        public boolean isTextOK() {
+            return textOK;
+        }
+        public boolean isResultsOK() {
+            return resultsOK;
+        }
+        public boolean isOK(){
+            return ((bohr.getStatus() == Bohr.status.OK) && textPositionOK && textOK && resultsOK && stringsOK);
+        }
+
+        @Override
+        public String toString() {
+            if (isOK())
+                return "OK";
+            else {
+                StringBuilder sb = new StringBuilder();
+                if (!textPositionOK)
+                    sb.append("TextPositionNotOK ");
+                if (!textOK)
+                    sb.append("TextNotOK ");
+                if (!resultsOK)
+                    sb.append("ResultsNotOK ");
+                if (!stringsOK)
+                    sb.append("StringsNotOK ");
+                if (bohr.getStatus() != Bohr.status.OK)
+                    sb.append("Bohr_").append(bohr.getStatus());
+                return sb.toString();
+            }
+        }
+
+        private boolean textPositionOK = true;
+        private boolean textOK = true;
+        private boolean resultsOK = true;
+        private boolean stringsOK = true;
+    }
+
+    public Algorithm_Status getStatus() {
+        Algorithm_Status status = new Algorithm_Status();
+        if (textPosition < 0)
+            status.textPositionOK = false;
+        if (text == null)
+            status.textOK = false;
+        if (results == null)
+            status.resultsOK = false;
+        if (strings == null)
+            status.stringsOK = false;
+        return status;
+    }
+
+    private Bohr bohr;
     private ArrayList<String> strings;
     private ArrayList<AlgorithmResult> results;
     private String text;

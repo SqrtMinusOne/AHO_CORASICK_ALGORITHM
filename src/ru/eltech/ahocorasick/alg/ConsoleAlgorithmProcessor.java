@@ -1,9 +1,6 @@
 package ru.eltech.ahocorasick.alg;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -28,7 +25,7 @@ class StringHandler{
         }
     }
 
-    public ArrayList<String> nextCommands(ArrayList<String> list){
+    ArrayList<String> nextCommands(ArrayList<String> list){
         list.add(command);
         if (nextHandler!=null)
             nextHandler.nextCommands(list);
@@ -57,7 +54,7 @@ class StringHandler{
     }
 
     private StringHandler nextHandler;
-    String command;
+    private String command;
 }
 
 public class ConsoleAlgorithmProcessor {
@@ -74,7 +71,8 @@ public class ConsoleAlgorithmProcessor {
                 addNext(new ResetHandler()).addNext(new RestartHandler()).addNext(new PrintBohrHandler()).
                 addNext(new AddHandler()).addNext(new SetTextHandler()).addNext(new TextHandler()).
                 addNext(new FileTextHandler()).addNext(new FileStringHandler()).addNext(new StepHandler()).
-                addNext(new ResultsHandler()).addNext(new FinishHandler()).addNext(new PrintStringsHandler());
+                addNext(new ResultsHandler()).addNext(new FinishHandler()).addNext(new PrintStringsHandler()).
+                addNext(new StatusHandler()).addNext(new SaveHandler()).addNext(new OpenHandler());
         handler.addNext(new DefaultHandler());
         do {
             ostream.print("AC> ");
@@ -161,9 +159,13 @@ public class ConsoleAlgorithmProcessor {
 
         @Override
         protected void doHandle(String request) {
-            for (String str : algorithm.getStrings()){
-                ostream.println(str);
+            if (algorithm.getStrings()!=null) {
+                for (String str : algorithm.getStrings()) {
+                    ostream.println(str);
+                }
             }
+            else
+                ostream.println("null");
         }
     }
 
@@ -306,13 +308,8 @@ public class ConsoleAlgorithmProcessor {
 
         @Override
         protected void doHandle(String request) {
-            for (AlgorithmResult res : algorithm.getResults()){
-                ostream.print("[" + res.getIndex() + ":" + res.getPatternNumber() + "] ");
-            }
-            ostream.println();
+            ostream.println(algorithm.resultsToString());
         }
-
-
     }
 
     class FinishHandler extends StringHandler{
@@ -323,6 +320,59 @@ public class ConsoleAlgorithmProcessor {
         @Override
         protected void doHandle(String request) {
             algorithm.finishAlgorithm();
+        }
+    }
+
+    class StatusHandler extends StringHandler{
+        StatusHandler() {
+            super("status");
+        }
+
+        @Override
+        protected void doHandle(String request) {
+            ostream.println(algorithm.getStatus());
+        }
+    }
+
+    class SaveHandler extends StringHandler{
+        SaveHandler() {
+            super("save");
+        }
+
+        @Override
+        protected void doHandle(String request) {
+            ostream.print("Enter file name: ");
+            String name = scanner.nextLine();
+            try {
+                FileWriter fw = new FileWriter(name);
+                fw.write(algorithm.toString());
+                fw.close();
+            }
+            catch (IOException e) {
+                ostream.println("Output failed");
+            }
+        }
+    }
+
+    class OpenHandler extends StringHandler{
+        OpenHandler() {
+            super("open alg");
+        }
+
+        @Override
+        protected void doHandle(String request) {
+            ostream.print("Enter file name: ");
+            String name = scanner.nextLine();
+            try{
+                Scanner fc = new Scanner(new File(name));
+                String text = fc.useDelimiter("\\A").next();
+                algorithm = Algorithm.fromString(text);
+                fc.close();
+                ostream.println("Reading complete. Status: " + algorithm.getStatus());
+            }
+            catch (IOException e){
+                ostream.println("Reading failed");
+            }
         }
     }
 
