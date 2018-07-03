@@ -7,39 +7,9 @@ import java.util.Objects;
 
 /**
  * Node is used for storing singular units of Aho-Corasick automate. <br>
- * Public methods:
- * <ul>
- *     <li>{@link #Node()} - default constructor</li>
- *     <li>{@link #addSon(Node, char)} </li>
- *     <li>{@link #getSon(char)}</li>
- *     <li>{@link #getSon()} </li>
- *     <li>{@link #isSon(char)}</li>
- *     <li>{@link #addTransition(Node, char)}</li>
- *     <li>{@link #getGo()}</li>
- *     <li>{@link #isTransitionBy(char)}</li>
- *     <li>{@link #getTransitionBy(char)}</li>
- *     <li>{@link #getParent()}</li>
- *     <li>{@link #getSuffLink()}</li>
- *     <li>{@link #setSuffLink(Node)}</li>
- *     <li>{@link #getUp()}</li>
- *     <li>{@link #setUp(Node)}</li>
- *     <li>{@link #getCharToParent()}</li>
- *     <li>{@link #isLeaf()}</li>
- *     <li>{@link #getLeafPatternNumber()}</li>
- *     <li>{@link #addLeaf(int)}</li>
- * </ul>
- *
- * Private fields: //TODO: Remove private fields JavaDoc after development is finished
- * <ul>
- *     <li><b>HashMap son</b> - HashMap of children</li>
- *     <li><b>HashMap go</b> - HashMap of already calculated transitions</li>
- *     <li><b>Node parent</b> - link to the parent Node</li>
- *     <li><b>Node suffLink</b> - saved suffix link from this Node</li>
- *     <li><b>Node up</b>- saved compressed suffix link from this Node</li>
- *     <li><b>char charToParent</b> - char for the transition from the parent to this Node</li>
- *     <li><b>boolean isLeaf</b> - determines, if there is a string's end in this Node</li>
- *     <li><b>ArrayList<Integer></b> - ArrayList with numbers of strings, which end here</li>
- * </ul>
+ * Node constructor can receive a number of Node and boolean, which determines, if this Node is temporary.
+ * Temporary Nodes are used for resolving dependencies while reading Nodes from files. <br>
+ * This class is designed to take advantage of lazy link calculation in Aho-Corasick algorithm
  * @version 0.4
  */
 public class Node {
@@ -137,7 +107,6 @@ public class Node {
         isLeaf = true;
     }
 
-    private class NodeUnresolvedDependencyException extends RuntimeException{};
     /**
      * Returns son by given symbol, if it exists
      * @param ch required symbol
@@ -160,7 +129,7 @@ public class Node {
     /**
      * Shows HashMap with transitions from this node
      */
-    public HashMap<Character, Node> getGo() {
+    HashMap<Character, Node> getGo() {
         return go;
     }
 
@@ -299,6 +268,7 @@ public class Node {
                         .append(ent.getValue().nodeNumber).append(") ");
             }
         }
+
         sb.append("| ");
         if (suffLink!=null){
             sb.append("SL: ").append(suffLink.nodeNumber).append(" | ");
@@ -319,22 +289,33 @@ public class Node {
         return sb.toString();
     }
 
+    /**
+     * Determines, if this Node is temporary
+     * @return true if temporary
+     */
     public boolean isTemp() {
         return temp;
     }
 
-    private boolean temp;
-
+    /**
+     * Gets number of the Node
+     * @return number
+     */
     int getNodeNumber() {
         return nodeNumber;
     }
 
-    private final int nodeNumber;
-
-    void setParent(Node parent) {
-        this.parent = parent;
+    /**
+     * Used to set parent, if the parent is null
+     * @param parent Node
+     */
+    void initParent(Node parent) {
+        if (this.parent == null)
+            this.parent = parent;
     }
 
+    private boolean temp;
+    private final int nodeNumber;
     private Node parent; //Link to parent
     private char charToParent; //Char to parent
     private ArrayList<Integer> leafPatternNumber;

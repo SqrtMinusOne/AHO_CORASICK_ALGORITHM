@@ -11,7 +11,7 @@ import java.util.HashSet;
 
 public class AlgorithmTest {
 
-    private AlgorithmResult nRes(int index, int patternNumber){
+    public static AlgorithmResult nRes(int index, int patternNumber){
         return new AlgorithmResult(index, patternNumber);
     }
 
@@ -68,6 +68,8 @@ public class AlgorithmTest {
         trueRes.add(nRes(3,0));
         Assert.assertEquals(alg.getResults(),trueRes);
 
+        Assert.assertTrue(alg.getStatus().isOK());
+
         alg.restart();
         Assert.assertEquals(alg.getTextPosition(), 0);
         Assert.assertEquals(alg.getText(), "AAAA");
@@ -75,5 +77,7 @@ public class AlgorithmTest {
 
         alg.reset();
         Assert.assertEquals(alg.getText(), "");
+
+
     }
 }
