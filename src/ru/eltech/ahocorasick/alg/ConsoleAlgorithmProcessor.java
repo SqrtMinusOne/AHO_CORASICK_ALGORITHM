@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 
 class StringHandler{
-    public StringHandler(){
+    StringHandler(){
         command = "";
         nextHandler = null;
     }
@@ -54,7 +54,7 @@ class StringHandler{
     }
 
     private StringHandler nextHandler;
-    private String command;
+    private final String command;
 }
 
 public class ConsoleAlgorithmProcessor {
@@ -387,8 +387,8 @@ public class ConsoleAlgorithmProcessor {
         }
     }
 
-    private PrintStream ostream;
-    private InputStream istream;
+    private final PrintStream ostream;
+    private final InputStream istream;
     private Scanner scanner;
 
     private Algorithm algorithm;

@@ -7,28 +7,6 @@ import java.util.Map;
  * This class manages the automate of Aho-Corasick / the suffix bohr. <br>
  * Initially the Bohr is created with only Node - root. <br>
  * Transitions between states of the automate are programmed using the lazy recursion method. <br>
- * Public methods:
- * <ul>
- *     <li>{@link #Bohr()}</li>
- *     <li>{@link #getNodes()}  }</li>
- *     <li>{@link #containsNode(Node)}  }</li>
- *     <li>{@link #getRoot()}  }</li>
- *     <li>{@link #getState()}  }</li>
- *     <li>{@link #addNode(Node, char)}  }</li>
- *     <li>{@link #addString(String)}  }</li>
- *     <li>{@link #getNextState(char)}  }</li>
- *     <li>{@link #getUp(Node)}  }</li>
- *     <li>{@link #getSuffLink(Node)} }</li>
- *     <li>{@link #getLink(Node, char)} }</li>
- * </ul>
- *
- * Private fields: //TODO: Remove private fields JavaDoc after development is finished
- * <ul>
- *     <li><b>HashSet nodes</b> - set of all nodes</li>
- *     <li><b>Node root</b> - root node</li>
- *     <li><b>Node state</b> - current state node</li>
- *     <li><b>int leafNumber</b> - Terminal states counter</li>
- * </ul>
  * @see Node
  */
 public class Bohr {
@@ -126,7 +104,7 @@ public class Bohr {
      * @param node - required Node
      * @return Node
      */
-    private Node getSuffLink(Node node){
+      Node getSuffLink(Node node){
         Node link = node.getSuffLink();
         if (link == null){
             if ((node == root ) || (node.getParent() == root)) {
@@ -171,14 +149,13 @@ public class Bohr {
     public Node getUp(Node node){
         Node link = node.getUp();
         if (link == null){
-            if (node.isLeaf()) {
-                link = getSuffLink(node);
-            }
-            else if (getSuffLink(node) == root){
-                link = root;
-            }
-            else{
-                link = getUp(getSuffLink(node));
+            if (!(link = getSuffLink(node)).isLeaf()) {
+                if (getSuffLink(node) == root){
+                    link = root;
+                }
+                else{
+                    link = getUp(getSuffLink(node));
+                }
             }
             node.setUp(link);
         }
@@ -206,7 +183,12 @@ public class Bohr {
         leafNumber = 0;
     }
 
-    public String[] getStringArray(){
+    /**
+     * Gets all Strings from Bohr. This can be used, if something has happened to user's
+     * String array
+     * @return String array
+     */
+    String[] getStringArray(){
         if (corrupt_node)
             return null;
         String[] arr = new String[leafNumber];
@@ -221,6 +203,11 @@ public class Bohr {
         return arr;
     }
 
+    /**
+     * Gets shortest path from root to given Node
+     * @param node required Node
+     * @return String
+     */
     private String getStringFromRoot(Node node) {
         StringBuilder sb = new StringBuilder();
         sb.append(node.getCharToParent());
@@ -262,6 +249,7 @@ public class Bohr {
             catch (Exception e){
                 node = null;
                 bohr.corrupt_node = true;
+                ind++;
                 continue;
             }
             if (rootFlag)
@@ -280,7 +268,8 @@ public class Bohr {
     }
 
     /**
-     * Solves dependencies in Bohr by replacing temporary Nodes with real ones
+     * Solves dependencies in Bohr by replacing temporary Nodes with real ones<br>
+     * This method ignores exceptions, however if input was incorrect, using of Bohr can cause errors
      */
     private void solveDependencies(){
         for (Node node : nodes){
@@ -300,7 +289,7 @@ public class Bohr {
                     try {
                         Node foundSon = nodes.get(son.getValue().getNodeNumber());
                         node.getSon().replace(son.getKey(), son.getValue(), foundSon);
-                        foundSon.setParent(node);
+                        foundSon.initParent(node);
                     }
                     catch (Exception ignored){
                     }
@@ -310,8 +299,6 @@ public class Bohr {
         }
     }
 
-    private boolean corrupt_node;
-
     public enum status {UNINITIALIZED, UNRESOLVED_DEPENDENCIES, CORRUPT_NODE, OK}
 
     /**
@@ -319,6 +306,7 @@ public class Bohr {
      * <ul>
      *     <li>UNINITIALIZED - Bohr was not initialized correctly or corrupted</li>
      *     <li>UNRESOLVED_DEPENDENCIES - some dependencies were not resolved</li>
+     *     <li>CORRUPT_NODE - some node has not been read correctly</li>
      *     <li>OK - everything is fine</li>
      * </ul>
      * @return enum status {UNINITIALIZED, UNRESOLVED_DEPENDENCIES, OK}
@@ -371,6 +359,7 @@ public class Bohr {
         return sb.toString();
     }
 
+    private boolean corrupt_node;
     private static int nodesNumber;
     private ArrayList<Node> nodes; //Set of all nodes TODO: Custom HashSet
     private Node root; //Root node

@@ -1,8 +1,9 @@
 package ru.eltech.ahocorasick.alg;
 
+import java.util.Comparator;
 import java.util.Objects;
 
-public class AlgorithmResult{
+public class AlgorithmResult implements Comparable{
     public int getIndex() {
         return index;
     }
@@ -37,7 +38,25 @@ public class AlgorithmResult{
     }
 
     @Override
+    public int compareTo(Object o) {
+        if (this == o) return 0;
+        AlgorithmResult that = (AlgorithmResult) o;
+        if (index == that.index)
+            return patternNumber - that.patternNumber;
+        else
+            return index - that.index;
+    }
+
+    public static class AlgResComparator implements Comparator<AlgorithmResult> {
+        @Override
+        public int compare(AlgorithmResult o1, AlgorithmResult o2) {
+            return o1.compareTo(o2);
+        }
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(index, patternNumber);
     }
 }
+

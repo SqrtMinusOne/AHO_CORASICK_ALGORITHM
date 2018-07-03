@@ -11,7 +11,7 @@ import java.util.HashSet;
 
 public class AlgorithmTest {
 
-    private AlgorithmResult nRes(int index, int patternNumber){
+    public static AlgorithmResult nRes(int index, int patternNumber){
         return new AlgorithmResult(index, patternNumber);
     }
 
