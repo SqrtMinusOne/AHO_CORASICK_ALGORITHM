@@ -37,14 +37,14 @@ public class AlgorithmHistoryTest {
 
         alg.finishAlgorithm();
         Assert.assertEquals(alg.getResults(),trueRes);
-        alg = history.undo();
+        alg = history.undo(alg);
         Assert.assertEquals(alg.getResults(),new ArrayList<>());
         alg = history.redo();
         alg.finishAlgorithm();
         Assert.assertEquals(alg.getResults(),trueRes);
         Assert.assertNull(history.redo());
 
-        alg = history.undo(3);
+        alg = history.undo(3, alg);
         alg.setText("AAAA");
         trueRes.remove(2);
         alg.finishAlgorithm();

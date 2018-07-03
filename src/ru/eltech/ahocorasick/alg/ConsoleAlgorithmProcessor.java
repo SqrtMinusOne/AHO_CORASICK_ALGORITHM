@@ -72,7 +72,8 @@ public class ConsoleAlgorithmProcessor {
                 addNext(new AddHandler()).addNext(new SetTextHandler()).addNext(new TextHandler()).
                 addNext(new FileTextHandler()).addNext(new FileStringHandler()).addNext(new StepHandler()).
                 addNext(new ResultsHandler()).addNext(new FinishHandler()).addNext(new PrintStringsHandler()).
-                addNext(new StatusHandler()).addNext(new SaveHandler()).addNext(new OpenHandler());
+                addNext(new StatusHandler()).addNext(new SaveHandler()).addNext(new OpenHandler()).
+                addNext(new UndoHandler()).addNext(new RedoHandler());
         handler.addNext(new DefaultHandler());
         do {
             ostream.print("AC> ");
@@ -84,7 +85,6 @@ public class ConsoleAlgorithmProcessor {
             }
         } while (!toExit);
     }
-
 
 
     private void processNPE(NullPointerException n){
@@ -373,6 +373,36 @@ public class ConsoleAlgorithmProcessor {
             catch (IOException e){
                 ostream.println("Reading failed");
             }
+        }
+    }
+
+    class UndoHandler extends StringHandler{
+        UndoHandler() {
+            super("undo");
+        }
+
+        @Override
+        protected void doHandle(String request) {
+            Algorithm alg = algorithm.getHistory().undo(algorithm);
+            if (alg!=null){
+                algorithm = alg;
+            }
+            else
+                ostream.println("History is empty");
+        }
+    }
+
+    class RedoHandler extends StringHandler{
+        RedoHandler() {super("redo"); }
+
+        @Override
+        protected void doHandle(String request) {
+            Algorithm alg = algorithm.getHistory().redo();
+            if (alg!=null){
+                algorithm = alg;
+            }
+            else
+                ostream.println("Nothing to redo");
         }
     }
 

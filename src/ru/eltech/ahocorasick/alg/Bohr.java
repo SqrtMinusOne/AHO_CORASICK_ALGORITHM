@@ -180,7 +180,9 @@ public class Bohr {
         nodes.clear();
         root = new Node();
         state = root;
+        nodes.add(root);
         leafNumber = 0;
+        nodesNumber = 1;
     }
 
     /**

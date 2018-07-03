@@ -16,10 +16,19 @@ public class Algorithm {
      * @param bohr Required Bohr object
      */
     public Algorithm(Bohr bohr){
+        this(bohr, true);
+    }
+
+    public Algorithm(Bohr bohr, boolean historyOn){
         this.bohr = bohr;
         strings = new ArrayList<>();
         results = new ArrayList<>();
         text = "";
+        if (history == null)
+            if (historyOn)
+                history = new AlgorithmHistory(100);
+            else
+                history = new AlgorithmHistory(0, false);
     }
 
     /**
@@ -42,6 +51,7 @@ public class Algorithm {
     public void reset(){
         if (bohr!=null)
             bohr.clear();
+        history.clear();
         strings = new ArrayList<>();
         results = new ArrayList<>();
         text = "";
@@ -52,9 +62,11 @@ public class Algorithm {
      * Resets of algorithm status
      */
     public void restart(){
+        history.save(this);
         textPosition = 0;
         bohr.clearTransitions();
         results.clear();
+
     }
 
     /**
@@ -102,17 +114,24 @@ public class Algorithm {
      * @param str String
      */
     public void addString(String str){
+        history.save(this);
         bohr.addString(str);
         strings.add(str);
+    }
+
+    public boolean doStep(){
+        return doStep(true);
     }
 
     /**
      * Does one step
      * @return true if step was successful
      */
-    public boolean doStep(){
+    private boolean doStep(boolean save){
         if (textPosition >= text.length())
             return false;
+        if (save)
+            history.save(this);
         bohr.getNextState(text.charAt(textPosition++));
         for (Node cur = bohr.getState(); cur != bohr.getRoot(); cur = bohr.getUp(cur)){
             if (cur.isLeaf()){
@@ -131,7 +150,7 @@ public class Algorithm {
      * @return ArrayList of results
      */
     public static ArrayList<AlgorithmResult> doAhoCorasick(String text, Iterable<String> strings){
-        Algorithm alg = new Algorithm(new Bohr());
+        Algorithm alg = new Algorithm(new Bohr(), false);
         for (String str : strings){
             alg.addString(str);
         }
@@ -322,6 +341,11 @@ public class Algorithm {
         return status;
     }
 
+    public AlgorithmHistory getHistory() {
+        return history;
+    }
+
+    private static AlgorithmHistory history;
     private Bohr bohr;
     private ArrayList<String> strings;
     private ArrayList<AlgorithmResult> results;
