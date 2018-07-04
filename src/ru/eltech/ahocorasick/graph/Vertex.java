@@ -1,11 +1,16 @@
 package ru.eltech.ahocorasick.graph;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Vertex {
 
     public int id;
-    public ArrayList<Edge> edges = new ArrayList<>();
+
+    public CopyOnWriteArrayList<Edge> getEdges() {
+        return edges;
+    }
+
+    private CopyOnWriteArrayList<Edge> edges = new CopyOnWriteArrayList<>();
 
     private float x;
     private float y;

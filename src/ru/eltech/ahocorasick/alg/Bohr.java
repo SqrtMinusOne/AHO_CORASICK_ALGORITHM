@@ -14,8 +14,8 @@ public class Bohr {
      *  Default constructor of Bohr
      */
     public Bohr(){
-        root = new Node();
         nodes = new ArrayList<>();
+        root = new Node();
         nodes.add(root);
         state = root;
         nodesNumber = 1;
@@ -363,8 +363,8 @@ public class Bohr {
 
     private boolean corrupt_node;
     private static int nodesNumber;
-    private ArrayList<Node> nodes; //Set of all nodes TODO: Custom HashSet
-    private Node root; //Root node
-    private Node state; //Current state
+    protected ArrayList<Node> nodes; //Set of all nodes TODO: Custom HashSet
+    protected Node root; //Root node
+    protected Node state; //Current state
     private int leafNumber; //Terminal states counter
 }

@@ -2,10 +2,7 @@ package ru.eltech.ahocorasick.ui;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -14,11 +11,27 @@ import java.util.Scanner;
 
 public class ControlArea extends JPanel {
 
-    private static final JTextArea srcArea = createArea();
-    private static final JTextArea outArea = createArea();
-
-    public ControlArea(){
+    public ControlArea(GraphicAlgorithmProcessor processor){
         super(null);
+        this.processor = processor;
+        initPanes();
+        Box mainBox = Box.createVerticalBox();
+        mainBox.setBorder(new TitledBorder("Control components"));
+        Box initialBox = createInitialBox();
+        Box setupBox = createSetupBox();
+        Box stepsBox = createStepsBox();
+        Box clearAndExitBox = createClearAndExitBox();
+        mainBox.add(initialBox);
+        mainBox.add(setupBox);
+        mainBox.add(stepsBox);
+        mainBox.add(clearAndExitBox);
+        add(mainBox);
+    }
+
+    /**
+     * Initialize In and Out panes
+     */
+    private void initPanes() {
         JScrollPane srcPane = new JScrollPane(srcArea);
         srcPane.setPreferredSize(new Dimension(100, 200));
         srcPane.setBorder(new TitledBorder("Source text"));
@@ -27,65 +40,78 @@ public class ControlArea extends JPanel {
         outPane.setBorder(new TitledBorder("Output text"));
         add(srcPane);
         add(outPane);
-        Box buttons = Box.createVerticalBox();
-        Box buttons1 = Box.createHorizontalBox();
-        Box buttons2 = Box.createHorizontalBox();
-        Box buttons3 = Box.createHorizontalBox();
-        //buttons1.setAlignmentX(RIGHT_ALIGNMENT);
-        //buttons.setBounds(0, 330, 290, 200); //w/o stretching
-        buttons.add(buttons1);
-        buttons.add(buttons2);
-        buttons.add(buttons3);
-        JButton file = new JButton("Choose a file");
-        file.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
-                FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                        "Txt files only", "txt");
-                chooser.setFileFilter(filter);
-                int returnVal = chooser.showOpenDialog(ControlArea.super.getParent());
-                if(returnVal == JFileChooser.APPROVE_OPTION) {
-                    File fl = chooser.getSelectedFile();
-                    try {
-                        writeToSrcArea(fl);
-                    }
-                    catch (FileNotFoundException exeption){
-                        exeption.printStackTrace();
-                    }
+    }
 
-                }
-            }
-        });
+    /**
+     * Create Initial Box
+     * @return Box
+     */
+    private Box createInitialBox() {
+        Box initialBox = Box.createHorizontalBox();
+        initialBox.setBorder((new TitledBorder("Initial actions")));
+        JButton file = new JButton("Choose a file");
         JButton start = new JButton("Start algorithm");
+        initialBox.add(Box.createHorizontalGlue());
+        initialBox.add(file);
+        initialBox.add(Box.createHorizontalGlue());
+        initialBox.add(start);
+        initialBox.add(Box.createHorizontalGlue());
+        file.addActionListener(processor::openFileAction);
+        return initialBox;
+    }
+
+    /**
+     * This box contains add string button
+     * @return
+     */
+    private Box createSetupBox(){
+        Box setupBox = Box.createHorizontalBox();
+        setupBox.setBorder(new TitledBorder("Algorithm setup"));
+        JButton addStringButton = new JButton("Add string");
+        setupBox.add(Box.createHorizontalGlue());
+        setupBox.add(addStringButton);
+        setupBox.add(Box.createHorizontalGlue());
+        addStringButton.addActionListener(processor::addStringAction);
+        return setupBox;
+    }
+
+    /**
+     * Create steps control Box
+     * @return Box
+     */
+    private Box createStepsBox() {
+        Box stepsBox = Box.createHorizontalBox();
+        stepsBox.setBorder((new TitledBorder("Steps control")));
         JButton prev = new JButton("<<");
         JButton stop = new JButton("Pause / Resume");
         JButton next = new JButton(">>");
+        stepsBox.add(Box.createHorizontalGlue());
+        stepsBox.add(prev);
+        stepsBox.add(Box.createHorizontalGlue());
+        stepsBox.add(stop);
+        stepsBox.add(Box.createHorizontalGlue());
+        stepsBox.add(next);
+        stepsBox.add(Box.createHorizontalGlue());
+        return stepsBox;
+    }
+
+    /**
+     * Create Clear and Exit control Box
+     * @return Box
+     */
+    private Box createClearAndExitBox() {
+        Box clearAndExitBox = Box.createHorizontalBox();
+        clearAndExitBox.setBorder((new TitledBorder("Clear and exit")));
         JButton clear = new JButton("Clear");
         JButton exit = new JButton("Exit");
-        //lol.setAlignmentX(CENTER_ALIGNMENT); //same
-        buttons1.add(Box.createHorizontalGlue());
-        buttons1.add(file);
-        buttons1.add(Box.createHorizontalGlue());
-        buttons1.add(start);
-        buttons1.add(Box.createHorizontalGlue());
-        buttons2.add(prev);
-        buttons2.add(Box.createHorizontalGlue());
-        buttons2.add(stop);
-        buttons2.add(Box.createHorizontalGlue());
-        buttons2.add(next);
-        buttons3.add(Box.createHorizontalGlue());
-        buttons3.add(clear);
-        buttons3.add(Box.createHorizontalGlue());
-        buttons3.add(exit);
-        buttons3.add(Box.createHorizontalGlue());
-        buttons.setBorder(new TitledBorder("Control components"));
-        buttons1.setBorder((new TitledBorder("Initial actions")));
-        buttons2.setBorder((new TitledBorder("Steps control")));
-        buttons3.setBorder((new TitledBorder("Clear and exit")));
-        add(buttons);
-
-
+        clearAndExitBox.add(Box.createHorizontalGlue());
+        clearAndExitBox.add(clear);
+        clearAndExitBox.add(Box.createHorizontalGlue());
+        clearAndExitBox.add(exit);
+        clearAndExitBox.add(Box.createHorizontalGlue());
+        clear.addActionListener(processor::clearAction);
+        exit.addActionListener(processor::exitAction);
+        return clearAndExitBox;
     }
 
     private static JTextArea createArea(){
@@ -108,4 +134,8 @@ public class ControlArea extends JPanel {
         }
         srcArea.append(flContent);
     }
+
+    private static final JTextArea srcArea = createArea();
+    private static final JTextArea outArea = createArea();
+    private final GraphicAlgorithmProcessor processor;
 }
