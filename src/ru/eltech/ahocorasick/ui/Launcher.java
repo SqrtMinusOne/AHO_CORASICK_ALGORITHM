@@ -8,6 +8,11 @@ import java.awt.*;
 public class Launcher extends JFrame {
 
     private final JPanel graphArea;
+
+    public ControlArea getControlArea() {
+        return controlArea;
+    }
+
     private final ControlArea controlArea;
     private final Menubar menubar;
     private final GraphicAlgorithmProcessor processor;
@@ -21,7 +26,7 @@ public class Launcher extends JFrame {
 
         graphArea = processor.getGraphPanel();
         graphArea.setBorder(new LineBorder(Color.BLACK, 5));
-        graphArea.setPreferredSize(new Dimension(700, 550));
+        graphArea.setPreferredSize(new Dimension(ControlArea.widht, ControlArea.height));
         graphArea.setBackground(Color.white); //temporary colour
 
         controlArea = new ControlArea(processor);

@@ -124,7 +124,7 @@ public class Algorithm {
     }
 
     /**
-     * Does one step
+     * Does source step
      * @return true if step was successful
      */
     private boolean doStep(boolean save){

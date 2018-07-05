@@ -78,6 +78,8 @@ public class Bohr {
      */
     public void addString(String str){
         Node cur = root;
+        if (str == null)
+            return;
         for (char ch : str.toCharArray()){
             Node son = cur.getSon(ch);
             if (son == null){

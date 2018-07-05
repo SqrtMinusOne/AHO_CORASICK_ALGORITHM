@@ -4,7 +4,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Vertex {
 
-    public int id;
+    public Vertex ( int id, float x, float y ) {
+        this.setId(id);
+        this.state = states.NORMAL;
+        this.x = x;
+        this.y = y;
+    }
 
     public CopyOnWriteArrayList<Edge> getEdges() {
         return edges;
@@ -12,21 +17,78 @@ public class Vertex {
 
     private CopyOnWriteArrayList<Edge> edges = new CopyOnWriteArrayList<>();
 
-    private float x;
-    private float y;
-    public float vx = 0;
-    public float vy = 0;
-
-    public Vertex ( int id, float x, float y ) {
-        this.id = id;
-
-        this.x = x;
-        this.y = y;
-    }
-
     public synchronized void setX ( float x ) { this.x = x; }
     public synchronized float getX () { return x; }
 
     public synchronized void setY ( float y ) { this.y = y; }
     public synchronized float getY () { return y; }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public synchronized states getState() {
+        return state;
+    }
+
+    public synchronized void setState(states state) {
+        this.state = state;
+    }
+
+    public int getTerminal() {
+        return terminal;
+    }
+
+    public void setTerminal(int terminal) {
+        this.terminal = terminal;
+    }
+
+    public float getDistanceTo(Vertex v){
+        return (float)Math.sqrt(Math.pow(x - v.getX(), 2) + Math.pow(y - v.getY(), 2));
+    }
+
+    public void setNewX(float newX) {
+        this.newX = newX;
+    }
+
+    public void setNewY(float newY) {
+        this.newY = newY;
+    }
+
+    public enum states {NORMAL, STATE, ROOT}
+
+    public boolean isPressed() {
+        return isPressed;
+    }
+
+    public void setPressed(boolean pressed) {
+        isPressed = pressed;
+    }
+
+    public boolean isIn(float x, float y){
+        double r = Math.sqrt(Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2));
+        return (r <= Vertex.size/2);
+    }
+
+    public void adjust(){
+        x = newX;
+        y = newY;
+    }
+
+    public static final int size = 35;
+    private boolean isPressed;
+    private states state;
+
+    private float newX;
+    private float newY;
+
+    private float x;
+    private float y;
+
+    private int terminal = -1;
+    private int id;
 }

@@ -15,13 +15,13 @@ public class Graph {
 
         for ( Vertex vertex : getVertices()) {
 
-            if ( vertex.id == id) { return vertex; }
+            if ( vertex.getId() == id) { return vertex; }
         }
         return null;
     }
 
     public Vertex createVertex ( int id ) {
-        Vertex newVertex = new Vertex( id, rand.nextFloat() * 200, rand.nextFloat() * 200 );
+        Vertex newVertex = new Vertex( id, rand.nextFloat() * 700, rand.nextFloat() * 550 );
         getVertices().add( newVertex );
         return newVertex;
     }

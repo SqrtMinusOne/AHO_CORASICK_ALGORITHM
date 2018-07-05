@@ -17,11 +17,11 @@ public class ControlArea extends JPanel {
         initPanes();
         Box mainBox = Box.createVerticalBox();
         mainBox.setBorder(new TitledBorder("Control components"));
-        Box initialBox = createInitialBox();
+        Box openBox = createOpenBox();
         Box setupBox = createSetupBox();
         Box stepsBox = createStepsBox();
         Box clearAndExitBox = createClearAndExitBox();
-        mainBox.add(initialBox);
+        mainBox.add(openBox);
         mainBox.add(setupBox);
         mainBox.add(stepsBox);
         mainBox.add(clearAndExitBox);
@@ -46,31 +46,25 @@ public class ControlArea extends JPanel {
      * Create Initial Box
      * @return Box
      */
-    private Box createInitialBox() {
-        Box initialBox = Box.createHorizontalBox();
-        initialBox.setBorder((new TitledBorder("Initial actions")));
-        JButton file = new JButton("Choose a file");
-        JButton start = new JButton("Start algorithm");
-        initialBox.add(Box.createHorizontalGlue());
-        initialBox.add(file);
-        initialBox.add(Box.createHorizontalGlue());
-        initialBox.add(start);
-        initialBox.add(Box.createHorizontalGlue());
-        file.addActionListener(processor::openFileAction);
-        return initialBox;
+    private Box createOpenBox() {
+        Box openBox = Box.createHorizontalBox();
+        openBox.setBorder((new TitledBorder("Initial actions")));
+        JButton fileText = new JButton("Open text");
+        JButton fileStrings = new JButton("Open strings");
+        niceAddButtons(openBox, fileText, fileStrings);
+        fileText.addActionListener(processor::openFileAction);
+        return openBox;
     }
 
     /**
      * This box contains add string button
-     * @return
+     * @return Box
      */
     private Box createSetupBox(){
         Box setupBox = Box.createHorizontalBox();
         setupBox.setBorder(new TitledBorder("Algorithm setup"));
         JButton addStringButton = new JButton("Add string");
-        setupBox.add(Box.createHorizontalGlue());
-        setupBox.add(addStringButton);
-        setupBox.add(Box.createHorizontalGlue());
+        niceAddButtons(setupBox, addStringButton);
         addStringButton.addActionListener(processor::addStringAction);
         return setupBox;
     }
@@ -82,16 +76,11 @@ public class ControlArea extends JPanel {
     private Box createStepsBox() {
         Box stepsBox = Box.createHorizontalBox();
         stepsBox.setBorder((new TitledBorder("Steps control")));
-        JButton prev = new JButton("<<");
-        JButton stop = new JButton("Pause / Resume");
-        JButton next = new JButton(">>");
-        stepsBox.add(Box.createHorizontalGlue());
-        stepsBox.add(prev);
-        stepsBox.add(Box.createHorizontalGlue());
-        stepsBox.add(stop);
-        stepsBox.add(Box.createHorizontalGlue());
-        stepsBox.add(next);
-        stepsBox.add(Box.createHorizontalGlue());
+        JButton stepButton = new JButton("Step");
+        JButton finishButton = new JButton("Finish");
+        JButton undoButton = new JButton("Undo");
+        JButton redoButton = new JButton("Redo");
+        niceAddButtons(stepsBox, stepButton, finishButton, undoButton, redoButton);
         return stepsBox;
     }
 
@@ -104,14 +93,18 @@ public class ControlArea extends JPanel {
         clearAndExitBox.setBorder((new TitledBorder("Clear and exit")));
         JButton clear = new JButton("Clear");
         JButton exit = new JButton("Exit");
-        clearAndExitBox.add(Box.createHorizontalGlue());
-        clearAndExitBox.add(clear);
-        clearAndExitBox.add(Box.createHorizontalGlue());
-        clearAndExitBox.add(exit);
-        clearAndExitBox.add(Box.createHorizontalGlue());
+        niceAddButtons(clearAndExitBox, clear, exit);
         clear.addActionListener(processor::clearAction);
         exit.addActionListener(processor::exitAction);
         return clearAndExitBox;
+    }
+
+    private void niceAddButtons(Box box, JButton ... buttons){
+        for (JButton button : buttons){
+            box.add(Box.createHorizontalGlue());
+            box.add(button);
+        }
+        box.add(Box.createHorizontalGlue());
     }
 
     private static JTextArea createArea(){
@@ -134,6 +127,13 @@ public class ControlArea extends JPanel {
         }
         srcArea.append(flContent);
     }
+
+    public static void writeToOutArea(String str){
+        outArea.append(str);
+    }
+
+    public static int widht = 700;
+    public static int height = 500;
 
     private static final JTextArea srcArea = createArea();
     private static final JTextArea outArea = createArea();

@@ -1,6 +1,8 @@
-package ru.eltech.ahocorasick.graph;
+package ru.eltech.ahocorasick.graph.test;
 import ru.eltech.ahocorasick.alg.Algorithm;
 import ru.eltech.ahocorasick.alg.BohrWithGraph;
+import ru.eltech.ahocorasick.graph.Graph;
+import ru.eltech.ahocorasick.graph.GraphPanel;
 
 import javax.swing.*;
 

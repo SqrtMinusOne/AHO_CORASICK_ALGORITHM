@@ -2,7 +2,9 @@ package ru.eltech.ahocorasick.ui;
 
 import ru.eltech.ahocorasick.alg.Algorithm;
 import ru.eltech.ahocorasick.alg.BohrWithGraph;
+import ru.eltech.ahocorasick.graph.Graph;
 import ru.eltech.ahocorasick.graph.GraphPanel;
+import ru.eltech.ahocorasick.graph.MouseProcessor;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -16,6 +18,8 @@ public class GraphicAlgorithmProcessor {
         bohr = new BohrWithGraph();
         algorithm = new Algorithm(bohr);
         graphPanel = new GraphPanel(bohr.getGraph());
+        graphPanel.addMouseListener(new MouseProcessor(this));
+        graphPanel.addMouseMotionListener(new MouseProcessor(this));
     }
 
     public Algorithm getAlgorithm() {
@@ -36,9 +40,13 @@ public class GraphicAlgorithmProcessor {
     }
 
     private GraphPanel graphPanel; //View
-    private Thread processGraph;
+    private Thread processGraph; //Graph processing thread
     private Algorithm algorithm; //Controller
     private BohrWithGraph bohr; //Model
+
+    public Graph getGraph(){
+        return bohr.getGraph();
+    }
 
     /**
      * Open file ActionListener
@@ -74,9 +82,15 @@ public class GraphicAlgorithmProcessor {
      */
     void clearAction(ActionEvent e){
         algorithm.reset();
+        bohr.updateStates();
     }
 
+    /**
+     * Exit ActionListener
+     */
     void exitAction(ActionEvent e){
         System.exit(0);
     }
+
+
 }
