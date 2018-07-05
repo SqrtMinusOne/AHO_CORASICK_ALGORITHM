@@ -59,5 +59,5 @@ public class MouseProcessor implements MouseListener, MouseMotionListener {
 
     private int relativeX;
     private int relativeY;
-    private GraphicAlgorithmProcessor processor;
+    private final GraphicAlgorithmProcessor processor;
 }

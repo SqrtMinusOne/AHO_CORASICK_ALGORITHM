@@ -136,5 +136,5 @@ public class AlgorithmHistory {
     private boolean on;
     private int index;
     private final int max;
-    private LinkedList<String> states;
+    private final LinkedList<String> states;
 }

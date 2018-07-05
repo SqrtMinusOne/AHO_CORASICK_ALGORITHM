@@ -31,18 +31,14 @@ public class GraphicAlgorithmProcessor {
     }
 
     public void start(){
-        processGraph = new Thread(graphPanel);
+        //Graph processing thread
+        Thread processGraph = new Thread(graphPanel);
         processGraph.start();
     }
 
     public GraphPanel getGraphPanel() {
         return graphPanel;
     }
-
-    private GraphPanel graphPanel; //View
-    private Thread processGraph; //Graph processing thread
-    private Algorithm algorithm; //Controller
-    private BohrWithGraph bohr; //Model
 
     public Graph getGraph(){
         return bohr.getGraph();
@@ -72,7 +68,7 @@ public class GraphicAlgorithmProcessor {
      * Add string ActionListener
      */
     void addStringAction(ActionEvent e){
-        String string = (String)JOptionPane.showInputDialog(getParentContainer(), "Input new string",
+        String string = JOptionPane.showInputDialog(getParentContainer(), "Input new string",
                 "Add String", JOptionPane.PLAIN_MESSAGE);
         algorithm.addString(string);
     }
@@ -92,5 +88,48 @@ public class GraphicAlgorithmProcessor {
         System.exit(0);
     }
 
+    /**
+     * Does one step of algorithm
+     */
+    void stepAction(ActionEvent e){
+        prepareStep();
+        boolean next = algorithm.doStep();
+        bohr.updateStates();
+        ControlArea.getOutArea().setText(algorithm.resultsToString());
+        if (!next){
+            JOptionPane.showMessageDialog(getParentContainer(), "Algorithm is finished");
+        }
+    }
 
+    /**
+     * Finishes algorithm
+     * @param e
+     */
+    void finishAction(ActionEvent e){
+        prepareStep();
+        algorithm.finishAlgorithm();
+        ControlArea.getOutArea().setText(algorithm.resultsToString());
+    }
+
+    private void prepareStep() {
+        if (!started){
+            started = true;
+            ControlArea.getSrcArea().setEditable(false);
+            algorithm.setText(ControlArea.getSrcArea().getText());
+        }
+        ControlArea.getOutArea().setText(null);
+    }
+
+    public void restartAction(ActionEvent e){
+        algorithm.restart();
+        bohr.updateStates();
+        ControlArea.getSrcArea().setEditable(true);
+        ControlArea.getOutArea().setText(null);
+    }
+
+    private boolean started;
+
+    private final GraphPanel graphPanel; //View
+    private final Algorithm algorithm; //Controller
+    private final BohrWithGraph bohr; //Model
 }

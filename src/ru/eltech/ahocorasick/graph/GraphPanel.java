@@ -12,19 +12,10 @@ public class GraphPanel extends JPanel implements Runnable {
         this.graph = graph;
     }
 
+    @SuppressWarnings({"InfiniteLoopStatement"})
     public void run() { //TODO
 
-        long t1 = System.currentTimeMillis();
-        long t0;
-        float dt;
-
-        float cx = getWidth() / 2f;
-        float cy = getHeight() / 2f;
-
         while ( true ) {
-            t0 = t1;
-            t1 = System.currentTimeMillis();
-            dt = (t1 - t0) / 1000f;
 
             for (Vertex vertex : graph.getVertices()){
                 calculateForces(vertex);
@@ -52,8 +43,6 @@ public class GraphPanel extends JPanel implements Runnable {
         for (Vertex vertex1 : graph.getVertices()){
             float dx = vertex.getX() - vertex1.getX();
             float dy = vertex.getY() - vertex1.getY();
-        //    if (vertex1 == vertex)
-        //        continue;
             float l = vertex.getDistanceTo(vertex1);
             if (l > 0){
                xvel += (dx * 25) / l;
@@ -68,7 +57,7 @@ public class GraphPanel extends JPanel implements Runnable {
         float weight = (vertex.getEdges().size() + 1) * 10;
         for (Edge edge : vertex.getEdges()){
             float dx, dy;
-            if (edge.source == vertex){
+            if (edge.getSource() == vertex){
                 dx = vertex.getX() - edge.getDestX();
                 dy = vertex.getY() - edge.getDestY();
             }
@@ -80,6 +69,7 @@ public class GraphPanel extends JPanel implements Runnable {
             yvel -= dy / weight;
         }
 
+        //Calculating forces, pushing items away from the borders
         if (vertex.getX() < this.getWidth()/2)
             xvel += Math.pow(this.getWidth()/2 - vertex.getX(), 2)/borderCoef;
         else
@@ -128,8 +118,8 @@ public class GraphPanel extends JPanel implements Runnable {
         VertexColor color = VertexColor.get(vertex);
         Color[] colors = new Color[]{color.grad0t, color.grad1t};
         float[] fractions = new float[]{0, 1};
-        g.setPaint(new RadialGradientPaint((float) vertex.getX(), (float) vertex.getY(),
-                (float) Vertex.size/2, (float) vertex.getX(), (float) vertex.getY(),
+        g.setPaint(new RadialGradientPaint(vertex.getX(), vertex.getY(),
+                (float) Vertex.size/2,  vertex.getX(), vertex.getY(),
                 fractions, colors, MultipleGradientPaint.CycleMethod.NO_CYCLE));
         g.fillOval((int) vertex.getX() - Vertex.size/2, (int) vertex.getY() - Vertex.size/2, Vertex.size, Vertex.size);
 
@@ -143,7 +133,7 @@ public class GraphPanel extends JPanel implements Runnable {
 
     private static class VertexColor{
         private VertexColor(){}
-        public static VertexColor get(Vertex v){
+        static VertexColor get(Vertex v){
             VertexColor res = new VertexColor();
             res.border = Color.black;
             float h = 0f;
@@ -166,7 +156,7 @@ public class GraphPanel extends JPanel implements Runnable {
             res.grad1t = Color.getHSBColor(h,s,b-0.1f);
             return res;
         }
-        public Color border;
+        Color border;
         Color grad0t;
         Color grad1t;
     }
@@ -184,6 +174,6 @@ public class GraphPanel extends JPanel implements Runnable {
         int newCenterY = centerY + (int)(Edge.textDistance*Math.cos(angle));
 
      //   g2d.drawLine(centerX, centerY, newCenterX, newCenterY);
-        g2d.drawString(edge.name, newCenterX, newCenterY);
+        g2d.drawString(edge.getName(), newCenterX, newCenterY);
     }
 }

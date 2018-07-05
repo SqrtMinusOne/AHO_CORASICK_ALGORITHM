@@ -17,7 +17,7 @@ public class AlgorithmTest {
 
     @Test
     public void algorithmFullTest(){
-        HashSet<String> strings = new HashSet<String>(4);
+        HashSet<String> strings = new HashSet<>(4);
         strings.add("a");
         strings.add("ab");
         strings.add("abc");

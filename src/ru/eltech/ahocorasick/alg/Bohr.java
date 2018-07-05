@@ -106,7 +106,7 @@ public class Bohr {
      * @param node - required Node
      * @return Node
      */
-      Node getSuffLink(Node node){
+    private Node getSuffLink(Node node){
         Node link = node.getSuffLink();
         if (link == null){
             if ((node == root ) || (node.getParent() == root)) {
@@ -251,7 +251,6 @@ public class Bohr {
                 node = Node.fromString(arr[ind]);
             }
             catch (Exception e){
-                node = null;
                 bohr.corrupt_node = true;
                 ind++;
                 continue;
@@ -365,8 +364,8 @@ public class Bohr {
 
     private boolean corrupt_node;
     private static int nodesNumber;
-    protected ArrayList<Node> nodes; //Set of all nodes TODO: Custom HashSet
-    protected Node root; //Root node
-    protected Node state; //Current state
+    final ArrayList<Node> nodes; //Set of all nodes TODO: Custom HashSet
+    Node root; //Root node
+    Node state; //Current state
     private int leafNumber; //Terminal states counter
 }

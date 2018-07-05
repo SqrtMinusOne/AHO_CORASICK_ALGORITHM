@@ -15,7 +15,7 @@ public class Vertex {
         return edges;
     }
 
-    private CopyOnWriteArrayList<Edge> edges = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<Edge> edges = new CopyOnWriteArrayList<>();
 
     public synchronized void setX ( float x ) { this.x = x; }
     public synchronized float getX () { return x; }

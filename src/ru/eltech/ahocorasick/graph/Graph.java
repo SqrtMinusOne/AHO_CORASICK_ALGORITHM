@@ -48,9 +48,9 @@ public class Graph {
         return vertices;
     }
 
-    private Random rand;
-    private CopyOnWriteArrayList<Vertex> vertices;
-    private CopyOnWriteArrayList<Edge> edges;
+    private final Random rand;
+    private final CopyOnWriteArrayList<Vertex> vertices;
+    private final CopyOnWriteArrayList<Edge> edges;
 
     public void clear() {
         vertices.clear();

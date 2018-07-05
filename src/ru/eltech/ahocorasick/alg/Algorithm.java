@@ -171,12 +171,11 @@ public class Algorithm {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(bohr.toString());
-        sb.append("\ntextPosition = ").append(textPosition);
-        sb.append("\ntext = ").append(text);
-        sb.append("\n").append(resultsToString()).append("\nEND");
-        return  sb.toString();
+        String sb = bohr.toString() +
+                "\ntextPosition = " + textPosition +
+                "\ntext = " + text +
+                "\n" + resultsToString() + "\nEND";
+        return sb;
 
     }
 
@@ -346,7 +345,7 @@ public class Algorithm {
     }
 
     private static AlgorithmHistory history;
-    private Bohr bohr;
+    private final Bohr bohr;
     private ArrayList<String> strings;
     private ArrayList<AlgorithmResult> results;
     private String text;

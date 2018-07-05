@@ -1,13 +1,6 @@
 package ru.eltech.ahocorasick.graph;
 
 public class Edge {
-    public final Vertex source;
-    public final Vertex dest;
-    public final String name;
-    public static float textDistance = 15;
-
-    public static float normalLength = 100;
-
     /**
      * Constructor for Edge
      * @param source First Vertex
@@ -67,5 +60,21 @@ public class Edge {
         return (float) res;
     }
 
+    public Vertex getSource() {
+        return source;
+    }
+
+    public Vertex getDest() {
+        return dest;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    private final Vertex source;
+    private final Vertex dest;
+    private final String name;
+    public static final float textDistance = 15;
 }
 

@@ -53,6 +53,8 @@ public class ControlArea extends JPanel {
         JButton fileStrings = new JButton("Open strings");
         niceAddButtons(openBox, fileText, fileStrings);
         fileText.addActionListener(processor::openFileAction);
+        fileText.setEnabled(false);
+        fileStrings.setEnabled(false);
         return openBox;
     }
 
@@ -81,6 +83,10 @@ public class ControlArea extends JPanel {
         JButton undoButton = new JButton("Undo");
         JButton redoButton = new JButton("Redo");
         niceAddButtons(stepsBox, stepButton, finishButton, undoButton, redoButton);
+        stepButton.addActionListener(processor::stepAction);
+        finishButton.addActionListener(processor::finishAction);
+        undoButton.setEnabled(false);
+        redoButton.setEnabled(false);
         return stepsBox;
     }
 
@@ -91,14 +97,21 @@ public class ControlArea extends JPanel {
     private Box createClearAndExitBox() {
         Box clearAndExitBox = Box.createHorizontalBox();
         clearAndExitBox.setBorder((new TitledBorder("Clear and exit")));
+        JButton restart = new JButton("Restart");
         JButton clear = new JButton("Clear");
         JButton exit = new JButton("Exit");
-        niceAddButtons(clearAndExitBox, clear, exit);
+        niceAddButtons(clearAndExitBox, restart, clear, exit);
         clear.addActionListener(processor::clearAction);
         exit.addActionListener(processor::exitAction);
+        restart.addActionListener(processor::restartAction);
         return clearAndExitBox;
     }
 
+    /**
+     * Adding buttons method
+     * @param box required box
+     * @param buttons required buttons
+     */
     private void niceAddButtons(Box box, JButton ... buttons){
         for (JButton button : buttons){
             box.add(Box.createHorizontalGlue());
@@ -107,33 +120,48 @@ public class ControlArea extends JPanel {
         box.add(Box.createHorizontalGlue());
     }
 
+    /**
+     * Initializer for JTextArea
+     * @return JTextArea
+     */
     private static JTextArea createArea(){
-        /*JLabel label = new JLabel(areaName);
-        label.setBounds(x, y, 290, 20);
-        add(label);*/ //labels
         JTextArea area = new JTextArea();
         area.setLineWrap(true);
         area.setWrapStyleWord(true);
         return area;
     }
 
+    /**
+     * Writes file to SrcArea
+     * @param file
+     * @throws FileNotFoundException
+     */
     public static void writeToSrcArea(File file) throws FileNotFoundException {
         String str = file.toString();
         FileReader fr = new FileReader(str);
         Scanner scanner = new Scanner(fr);
-        String flContent = "";
+        StringBuilder flContent = new StringBuilder();
         while(scanner.hasNextLine()){
-            flContent += scanner.nextLine();
+            flContent.append(scanner.nextLine());
         }
-        srcArea.append(flContent);
+        srcArea.append(flContent.toString());
     }
 
-    public static void writeToOutArea(String str){
-        outArea.append(str);
+    /**
+     * Getter for srcAre
+     * @return srcAre
+     */
+    public static JTextArea getSrcArea() {
+        return srcArea;
     }
 
-    public static int widht = 700;
-    public static int height = 500;
+    /**
+     * Getter for outArea
+     * @return outArea
+     */
+    public static JTextArea getOutArea() {
+        return outArea;
+    }
 
     private static final JTextArea srcArea = createArea();
     private static final JTextArea outArea = createArea();
