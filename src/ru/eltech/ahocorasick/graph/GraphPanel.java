@@ -2,6 +2,7 @@ package ru.eltech.ahocorasick.graph;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Path2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,15 +14,14 @@ public class GraphPanel extends JPanel implements Runnable {
     }
 
     @SuppressWarnings({"InfiniteLoopStatement"})
-    public void run() { //TODO
+    public void run() {
 
         while ( true ) {
-
-            for (Vertex vertex : graph.getVertices()){
+            for (Vertex vertex : graph.getVertices()) {
                 calculateForces(vertex);
             }
 
-            for (Vertex vertex : graph.getVertices()){
+            for (Vertex vertex : graph.getVertices()) {
                 vertex.adjust();
             }
 
@@ -34,10 +34,11 @@ public class GraphPanel extends JPanel implements Runnable {
         }
     }
 
+    private final static float borderCoef= 3e8f;
+
     private void calculateForces(Vertex vertex) {
         float xvel = 0;
         float yvel = 0;
-        final float borderCoef= 100000;
 
         //Calculating forces which push this item away
         for (Vertex vertex1 : graph.getVertices()){
@@ -45,16 +46,13 @@ public class GraphPanel extends JPanel implements Runnable {
             float dy = vertex.getY() - vertex1.getY();
             float l = vertex.getDistanceTo(vertex1);
             if (l > 0){
-               xvel += (dx * 25) / l;
-               yvel += (dy * 25) / l;
+                xvel += (dx * 150) / Math.pow(l,2);
+                yvel += (dy * 150) / Math.pow(l,2);
             }
         }
 
-        xvel /= Math.pow(graph.getVertices().size(), 2);
-        yvel /= Math.pow(graph.getVertices().size(), 2);
-
         //Calculating forces pulling item together
-        float weight = (vertex.getEdges().size() + 1) * 10;
+        float weight = (float)Math.pow((vertex.getEdges().size() + 1),1.3) * 10;
         for (Edge edge : vertex.getEdges()){
             float dx, dy;
             if (edge.getSource() == vertex){
@@ -71,14 +69,14 @@ public class GraphPanel extends JPanel implements Runnable {
 
         //Calculating forces, pushing items away from the borders
         if (vertex.getX() < this.getWidth()/2)
-            xvel += Math.pow(this.getWidth()/2 - vertex.getX(), 2)/borderCoef;
+            xvel += Math.pow(this.getWidth()/2 - vertex.getX(), 4)/borderCoef;
         else
-            xvel -= Math.pow(this.getWidth()/2 - vertex.getX(), 2)/borderCoef;
+            xvel -= Math.pow(this.getWidth()/2 - vertex.getX(), 4)/borderCoef;
 
         if (vertex.getY() < this.getHeight()/2)
-            yvel += Math.pow(this.getHeight()/2 - vertex.getY(), 2)/borderCoef;
+            yvel += Math.pow(this.getHeight()/2 - vertex.getY(), 4)/borderCoef;
         else
-            yvel -= Math.pow(this.getHeight()/2 - vertex.getY(), 2)/borderCoef;
+            yvel -= Math.pow(this.getHeight()/2 - vertex.getY(), 4)/borderCoef;
 
         if ((Math.abs(xvel) < 0.1) && (Math.abs(yvel) < 0.1)){
             xvel = yvel = 0;
@@ -110,8 +108,8 @@ public class GraphPanel extends JPanel implements Runnable {
         for ( Edge edge : graph.getEdges()) {
             drawEdge(g2d, edge);
         }
-        g2d.setColor( Color.green );
-        g2d.fillOval( getWidth() / 2 - 2, getHeight() / 2 - 2, 5, 5 );
+     //   g2d.setColor( Color.green );
+     //   g2d.fillOval( getWidth() / 2 - 2, getHeight() / 2 - 2, 5, 5 );
     }
 
     private void drawVertex(Graphics2D g, Vertex vertex) {
@@ -162,18 +160,37 @@ public class GraphPanel extends JPanel implements Runnable {
     }
 
     private void drawEdge(Graphics2D g2d, Edge edge) {
-        g2d.setColor(Color.black);
-        g2d.drawLine( (int) edge.getSourceX(),(int) edge.getSourceY(), ( int ) edge.getDestX(), ( int ) edge.getDestY() );
         int centerX = (int) edge.getSourceX() - ((int) edge.getSourceX() - (int) edge.getDestX())/2;
         int centerY = (int) edge.getSourceY() - ((int) edge.getSourceY() - (int) edge.getDestY())/2;
         float angle = edge.getAngle() + (float) Math.PI/2;
         if (angle > 2 * Math.PI)
             angle -= (float)(2*Math.PI);
 
-        int newCenterX = centerX + (int)(Edge.textDistance*Math.sin(angle));
-        int newCenterY = centerY + (int)(Edge.textDistance*Math.cos(angle));
+        if (edge.getState() == Edge.states.NORMAL) {
+            g2d.setColor(Color.black);
+            g2d.drawLine((int) edge.getSourceX(), (int) edge.getSourceY(), (int) edge.getDestX(), (int) edge.getDestY());
+        }
+        else{
+            float dCoef = 0.5f;
+            if (edge.getState() == Edge.states.ROUND1)
+                g2d.setColor(Color.black);
+            else if (edge.getState() == Edge.states.ROUND2){
+                g2d.setColor(Color.red);
+                dCoef = 1;
+            }
+            Path2D.Float curve = new Path2D.Float();
+            curve.moveTo(edge.getSourceX(), edge.getSourceY());
+            float l = edge.getDest().getDistanceTo(edge.getSource());
+            float bezierX = centerX + (float)(Edge.curveCoef*dCoef*Math.sin(angle))*l;
+            float bezierY = centerY + (float)(Edge.curveCoef*dCoef*Math.cos(angle))*l;
+            curve.curveTo(edge.getSourceX(), edge.getSourceY(),
+                    bezierX, bezierY, edge.getDestX(), edge.getDestY());
+            g2d.draw(curve);
+        }
 
-     //   g2d.drawLine(centerX, centerY, newCenterX, newCenterY);
-        g2d.drawString(edge.getName(), newCenterX, newCenterY);
+        //   g2d.drawLine(centerX, centerY, newCenterX, newCenterY);
+        g2d.drawString(edge.getName(),
+                centerX + (int)(Edge.textDistance*Math.sin(angle)),
+                centerY + (int)(Edge.textDistance*Math.cos(angle)));
     }
 }

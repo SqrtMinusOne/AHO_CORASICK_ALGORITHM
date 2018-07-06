@@ -8,11 +8,14 @@ public class Edge {
      * @param name Name of Edge
      */
     public Edge (Vertex source, Vertex dest, String name ) {
+        this(source, dest, name, states.NORMAL);
+    }
 
+    public Edge(Vertex source, Vertex dest, String name, states state) {
+        this.state = state;
         this.source = source;
         this.dest = dest;
         this.name = name;
-
     }
 
     /**
@@ -72,9 +75,17 @@ public class Edge {
         return name;
     }
 
+    public enum states {NORMAL, ROUND1, ROUND2};
+
+    public states getState() {
+        return state;
+    }
+
+    private final states state;
     private final Vertex source;
     private final Vertex dest;
     private final String name;
     public static final float textDistance = 15;
+    public static final float curveCoef = 0.25f;
 }
 

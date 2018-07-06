@@ -74,28 +74,15 @@ public class GraphicAlgorithmProcessor {
     }
 
     /**
-     * Clear ActionListener
-     */
-    void clearAction(ActionEvent e){
-        algorithm.reset();
-        bohr.updateStates();
-    }
-
-    /**
-     * Exit ActionListener
-     */
-    void exitAction(ActionEvent e){
-        System.exit(0);
-    }
-
-    /**
      * Does one step of algorithm
      */
     void stepAction(ActionEvent e){
         prepareStep();
         boolean next = algorithm.doStep();
         bohr.updateStates();
-        ControlArea.getOutArea().setText(algorithm.resultsToString());
+        bohr.updateEdges();
+        ControlArea.getOutArea().setText(null);
+        ControlArea.getOutArea().append(algorithm.resultsToString());
         if (!next){
             JOptionPane.showMessageDialog(getParentContainer(), "Algorithm is finished");
         }
@@ -103,11 +90,12 @@ public class GraphicAlgorithmProcessor {
 
     /**
      * Finishes algorithm
-     * @param e
      */
     void finishAction(ActionEvent e){
         prepareStep();
         algorithm.finishAlgorithm();
+        bohr.updateStates();
+        bohr.updateEdges();
         ControlArea.getOutArea().setText(algorithm.resultsToString());
     }
 
@@ -120,12 +108,36 @@ public class GraphicAlgorithmProcessor {
         ControlArea.getOutArea().setText(null);
     }
 
+    /**
+     * Restarts the Algorithm
+     */
     public void restartAction(ActionEvent e){
         algorithm.restart();
         bohr.updateStates();
+        bohr.updateEdges();
         ControlArea.getSrcArea().setEditable(true);
         ControlArea.getOutArea().setText(null);
+        started = false;
     }
+
+    /**
+     * Clear ActionListener
+     */
+    void clearAction(ActionEvent e){
+        algorithm.reset();
+        bohr.updateStates();
+        ControlArea.getSrcArea().setEditable(true);
+        ControlArea.getOutArea().setText(null);
+        started = false;
+    }
+
+    /**
+     * Exit ActionListener
+     */
+    void exitAction(ActionEvent e){
+        System.exit(0);
+    }
+
 
     private boolean started;
 

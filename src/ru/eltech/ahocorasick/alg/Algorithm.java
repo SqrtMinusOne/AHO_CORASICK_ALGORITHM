@@ -165,7 +165,7 @@ public class Algorithm {
     public void finishAlgorithm() {
         boolean fin;
         do{
-            fin = doStep();
+            fin = doStep(false);
         } while(fin);
     }
 
@@ -174,7 +174,7 @@ public class Algorithm {
         String sb = bohr.toString() +
                 "\ntextPosition = " + textPosition +
                 "\ntext = " + text +
-                "\n" + resultsToString() + "\nEND";
+                "\n" + rawResultsToString() + "\nEND";
         return sb;
 
     }
@@ -183,7 +183,7 @@ public class Algorithm {
      * Converts results array to more compact String
      * @return String of results in form [index:patternNumber]
      */
-    public String resultsToString(){
+    private String rawResultsToString(){
         if (results == null)
             return "null";
         StringBuilder sb = new StringBuilder();
@@ -194,7 +194,21 @@ public class Algorithm {
     }
 
     /**
-     * Converts string, received from resultsToString, to array of results
+     * Processes results and returns them in the String form
+     * @return String of results in form [index:patternNumber]
+     */
+    public String resultsToString(){
+        if (results == null)
+            return "null";
+        StringBuilder sb = new StringBuilder();
+        for (AlgorithmResult res : processResults(results)) {
+            sb.append("[").append(res.getIndex()).append(":").append(res.getPatternNumber()).append("] ");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Converts string, received from rawResultsToString, to array of results
      * @param str string with results in form [index:patternNumber]
      * @return ArrayList of AlgorithmResult
      */
