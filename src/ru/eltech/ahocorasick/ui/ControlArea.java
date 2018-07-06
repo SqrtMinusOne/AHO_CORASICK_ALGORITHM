@@ -1,14 +1,14 @@
 package ru.eltech.ahocorasick.ui;
 
+import javafx.stage.FileChooser;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.Scanner;
 
 
@@ -31,6 +31,9 @@ public class ControlArea extends JPanel {
         Box buttons1 = Box.createHorizontalBox();
         Box buttons2 = Box.createHorizontalBox();
         Box buttons3 = Box.createHorizontalBox();
+        buttons.setMaximumSize(new Dimension(300, 200));
+        buttons.setMinimumSize(new Dimension(300, 200));
+        //buttons.setAlignmentX(LEFT_ALIGNMENT);
         //buttons1.setAlignmentX(RIGHT_ALIGNMENT);
         //buttons.setBounds(0, 330, 290, 200); //w/o stretching
         buttons.add(buttons1);
@@ -50,8 +53,8 @@ public class ControlArea extends JPanel {
                     try {
                         writeToSrcArea(fl);
                     }
-                    catch (FileNotFoundException exeption){
-                        exeption.printStackTrace();
+                    catch (IOException exception){
+                        exception.printStackTrace();
                     }
 
                 }
@@ -63,20 +66,28 @@ public class ControlArea extends JPanel {
         JButton next = new JButton(">>");
         JButton clear = new JButton("Clear");
         JButton exit = new JButton("Exit");
+        exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
         //lol.setAlignmentX(CENTER_ALIGNMENT); //same
         buttons1.add(Box.createHorizontalGlue());
         buttons1.add(file);
-        buttons1.add(Box.createHorizontalGlue());
+        buttons1.add(Box.createHorizontalStrut(5));
         buttons1.add(start);
         buttons1.add(Box.createHorizontalGlue());
+        buttons2.add(Box.createHorizontalGlue());
         buttons2.add(prev);
-        buttons2.add(Box.createHorizontalGlue());
+        buttons2.add(Box.createHorizontalStrut(5));
         buttons2.add(stop);
-        buttons2.add(Box.createHorizontalGlue());
+        buttons2.add(Box.createHorizontalStrut(5));
         buttons2.add(next);
+        buttons2.add(Box.createHorizontalGlue());
         buttons3.add(Box.createHorizontalGlue());
         buttons3.add(clear);
-        buttons3.add(Box.createHorizontalGlue());
+        buttons3.add(Box.createHorizontalStrut(5));
         buttons3.add(exit);
         buttons3.add(Box.createHorizontalGlue());
         buttons.setBorder(new TitledBorder("Control components"));
@@ -98,7 +109,7 @@ public class ControlArea extends JPanel {
         return area;
     }
 
-    public static void writeToSrcArea(File file) throws FileNotFoundException {
+    public static void writeToSrcArea(File file) throws IOException{
         String str = file.toString();
         FileReader fr = new FileReader(str);
         Scanner scanner = new Scanner(fr);
@@ -107,5 +118,13 @@ public class ControlArea extends JPanel {
             flContent += scanner.nextLine();
         }
         srcArea.append(flContent);
+        fr.close();
+    }
+
+    public static void saveFromOutArea(File file) throws IOException{
+        FileWriter fw = new FileWriter(file);
+        fw.write("Source text:\n" + srcArea.getText() + "\n\n");
+        fw.write("Results:\n" + outArea.getText());
+        fw.close();
     }
 }

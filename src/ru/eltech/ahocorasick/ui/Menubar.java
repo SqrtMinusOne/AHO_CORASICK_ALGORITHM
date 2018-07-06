@@ -34,12 +34,37 @@ public class Menubar extends JMenuBar {
                     try {
                         ControlArea.writeToSrcArea(fl);
                     }
-                    catch (FileNotFoundException exeption){
-                        exeption.printStackTrace();
+                    catch (IOException exception){
+                        exception.printStackTrace();
                     }
                 }
             }
         });
+        JMenuItem saveResItem = new JMenuItem("Save results");
+        saveResItem.setFont(font);
+        file.add(saveResItem);
+        saveResItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser chooser = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                        "Txt files only", "txt");
+                chooser.setFileFilter(filter);
+                int returnVal = chooser.showOpenDialog(Menubar.super.getParent());
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    File fl = chooser.getSelectedFile();
+                    try {
+                        ControlArea.saveFromOutArea(fl);
+                    }
+                    catch (IOException exception){
+                        exception.printStackTrace();
+                    }
+                }
+            }
+        });
+        JMenuItem saveGraphItem = new JMenuItem("Save graph");
+        saveGraphItem.setFont(font);
+        file.add(saveGraphItem);
         file.addSeparator();
         JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.setFont(font);
@@ -52,8 +77,7 @@ public class Menubar extends JMenuBar {
         });
         help = createMenu("Help", font);
         add(file);
-        add(help);
-
+        add(help); //add smth
     }
 
     private JMenu createMenu(String name, Font font){
