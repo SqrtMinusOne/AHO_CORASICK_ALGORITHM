@@ -25,12 +25,73 @@ public class BohrTest {
     public void bohrAddStringTest(){
         Bohr bohr = new Bohr();
         bohr.addString("abc");
-        Node node;
+        Node node, node2;
         Assert.assertNotNull((node = bohr.getRoot().getSon('a')));
         Assert.assertNotNull((node = node.getSon('b')));
+        node2 = node;
         Assert.assertNotNull((node = node.getSon('c')));
         Assert.assertTrue(node.isLeaf());
+
+        Assert.assertFalse(node2.isLeaf());
+        bohr.addString("ab");
+        Assert.assertTrue(node2.isLeaf());
+
+        bohr.addString("abd");
+        Assert.assertTrue(node2.isSon('d'));
+        Assert.assertTrue(node2.getSon('d').isLeaf());
     }
 
+    @Test
+    public void bohrLinkTest(){
+        Bohr bohr = makeBorExample();
+        Node node = bohr.getLink(bohr.getRoot(), 'h');
+        node = bohr.getLink(node, 'e');
+        Assert.assertTrue(node.getLeafPatternNumber().contains(0));
 
+        node = bohr.getLink(node, 'r');
+        node = bohr.getLink(node, 's');
+        Assert.assertTrue(node.getLeafPatternNumber().contains(3));
+
+        node = bohr.getLink(node, 'h');
+        node = bohr.getLink(node, 'e');
+        Assert.assertTrue(node.getLeafPatternNumber().contains(1));
+
+        node = bohr.getUp(node);
+        Assert.assertTrue(node.getLeafPatternNumber().contains(0));
+
+        node = bohr.getLink(bohr.getRoot(), 'h');
+        node = bohr.getLink(node, 'i');
+        node = bohr.getLink(node, 's');
+        Assert.assertTrue(node.getLeafPatternNumber().contains(2));
+
+    }
+
+    static Bohr makeBorExample() {
+        Bohr bohr = new Bohr();
+        bohr.addString("he");
+        bohr.addString("she");
+        bohr.addString("his");
+        bohr.addString("hers");
+        Assert.assertEquals(bohr.getStatus(), Bohr.status.OK);
+        return bohr;
+    }
+
+    @Test
+    public void bohrStateTest(){
+        Bohr bohr = makeBorExample();
+        checkBohrExample(bohr);
+    }
+
+    public static void checkBohrExample(Bohr bohr) {
+        Assert.assertEquals(bohr.getStatus(), Bohr.status.OK);
+        bohr.getNextState('h');
+        bohr.getNextState('e');
+        Assert.assertTrue(bohr.getState().isLeaf());
+        bohr.getNextState('r');
+        bohr.getNextState('s');
+        Assert.assertTrue(bohr.getState().isLeaf());
+        bohr.getNextState('h');
+        bohr.getNextState('e');
+        Assert.assertTrue(bohr.getState().isLeaf());
+    }
 }

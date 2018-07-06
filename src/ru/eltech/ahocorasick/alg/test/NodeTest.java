@@ -12,7 +12,7 @@ public class NodeTest {
         Node node2 = new Node();
         node1.addSon(node2, 'a');
         Assert.assertEquals(node2.getCharToParent(), 'a');
-        Assert.assertTrue(node2.getParent().equals(node1));
+        Assert.assertEquals(node2.getParent(), node1);
         Assert.assertTrue(node1.isSon('a'));
         Assert.assertFalse(node1.isSon('b'));
         Assert.assertEquals(node1.getSon('a'), node2);
