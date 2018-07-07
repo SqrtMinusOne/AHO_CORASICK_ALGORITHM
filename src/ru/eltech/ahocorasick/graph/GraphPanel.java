@@ -100,8 +100,9 @@ public class GraphPanel extends JPanel implements Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setColor( Color.white );
-        g2d.fillRect( 0, 0, getWidth(), getHeight() );
+        g2d.setPaint(new GradientPaint(0, 0, Color.white,
+                this.getWidth(), this.getHeight(), Color.lightGray));
+        g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
 
         if ((graph.getVertices() !=null) && (graph.getVertices().size()!=0)) {
             for (Vertex vertex : graph.getVertices()) {
