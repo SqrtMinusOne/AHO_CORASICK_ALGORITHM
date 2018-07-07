@@ -1,11 +1,17 @@
 package ru.eltech.ahocorasick.ui;
 
+import javafx.stage.FileChooser;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
 import java.util.Scanner;
 
 
@@ -136,6 +142,7 @@ public class ControlArea extends JPanel {
      * @throws FileNotFoundException if file was not found
      */
     public static void writeToSrcArea(File file) throws FileNotFoundException {
+
         String str = file.toString();
         FileReader fr = new FileReader(str);
         Scanner scanner = new Scanner(fr);
@@ -143,6 +150,7 @@ public class ControlArea extends JPanel {
         while(scanner.hasNextLine()){
             flContent.append(scanner.nextLine());
         }
+
         srcArea.append(flContent.toString());
     }
 
@@ -152,6 +160,7 @@ public class ControlArea extends JPanel {
      */
     public static JTextArea getSrcArea() {
         return srcArea;
+
     }
 
     /**

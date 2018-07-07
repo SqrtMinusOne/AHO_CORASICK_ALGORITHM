@@ -23,8 +23,7 @@ public class Menubar extends JMenuBar {
         exitItem.addActionListener(processor::exitAction);
         help = createMenu("Help", font);
         add(file);
-        add(help);
-
+        add(help); //add smth
     }
 
     private JMenu createMenu(String name, Font font){
