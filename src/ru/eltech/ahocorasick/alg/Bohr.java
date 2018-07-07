@@ -233,48 +233,53 @@ public class Bohr {
         bohr.nodes.clear();
         String[] arr = str.split("\n");
         int ind = 1;
-        boolean stateFlag;
-        boolean rootFlag;
         while (!arr[ind].startsWith("}")){
-            stateFlag = false;
-            rootFlag = false;
-            if (arr[ind].startsWith("[Root]")) {
-                arr[ind] = arr[ind].substring(6);
-                rootFlag = true;
-            }
-            if (arr[ind].startsWith("[Current]")){
-               stateFlag = true;
-               arr[ind] = arr[ind].substring(9);
-            }
-            Node node;
-            try {
-                node = Node.fromString(arr[ind]);
-            }
-            catch (Exception e){
-                bohr.corrupt_node = true;
-                ind++;
-                continue;
-            }
-            if (rootFlag)
-                bohr.root = node;
-            if (stateFlag)
-                bohr.state = node;
-            for (int n : node.getLeafPatternNumber())
-                if (n > bohr.leafNumber)
-                    bohr.leafNumber = n;
-            bohr.nodes.add(node.getNodeNumber(), node);
-            ind++;
+            ind = processNodeInArr(bohr, arr, ind);
         }
         bohr.leafNumber++;
         bohr.solveDependencies();
         return bohr;
     }
 
+    protected static int processNodeInArr(Bohr bohr, String[] arr, int ind) {
+        boolean stateFlag;
+        boolean rootFlag;
+        stateFlag = false;
+        rootFlag = false;
+        if (arr[ind].startsWith("[Root]")) {
+            arr[ind] = arr[ind].substring(6);
+            rootFlag = true;
+        }
+        if (arr[ind].startsWith("[Current]")){
+           stateFlag = true;
+           arr[ind] = arr[ind].substring(9);
+        }
+        Node node;
+        try {
+            node = Node.fromString(arr[ind]);
+        }
+        catch (Exception e){
+            bohr.corrupt_node = true;
+            ind++;
+            return ind;
+        }
+        if (rootFlag)
+            bohr.root = node;
+        if (stateFlag)
+            bohr.state = node;
+        for (int n : node.getLeafPatternNumber())
+            if (n > bohr.leafNumber)
+                bohr.leafNumber = n;
+        bohr.nodes.add(node.getNodeNumber(), node);
+        ind++;
+        return ind;
+    }
+
     /**
      * Solves dependencies in Bohr by replacing temporary Nodes with real ones<br>
      * This method ignores exceptions, however if input was incorrect, using of Bohr can cause errors
      */
-    private void solveDependencies(){
+    protected void solveDependencies(){
         for (Node node : nodes){
             if ((node.getSuffLink()!=null) && (node.getSuffLink().isTemp())){
                 node.setSuffLink(nodes.get(node.getSuffLink().getNodeNumber()));
@@ -348,7 +353,7 @@ public class Bohr {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Bohr: {Nodes: ").append(nodes.size()).append(" \n");
+        sb.append("BohrWithoutGraph: {Nodes: ").append(nodes.size()).append(" \n");
         for (Node node : nodes){
             if (node == root){
                 sb.append("[Root]");
@@ -362,10 +367,10 @@ public class Bohr {
         return sb.toString();
     }
 
-    private boolean corrupt_node;
+    protected boolean corrupt_node;
     private static int nodesNumber;
     final ArrayList<Node> nodes; //Set of all nodes TODO: Custom HashSet
     Node root; //Root node
     Node state; //Current state
-    private int leafNumber; //Terminal states counter
+    protected int leafNumber; //Terminal states counter
 }

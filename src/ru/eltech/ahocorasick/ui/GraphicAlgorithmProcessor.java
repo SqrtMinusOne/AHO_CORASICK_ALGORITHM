@@ -12,8 +12,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Scanner;
 
+/**
+ * This class combines algorithm logic and graphics
+ */
 public class GraphicAlgorithmProcessor {
+    /**
+     * Default constructor
+     */
     public GraphicAlgorithmProcessor() {
         bohr = new BohrWithGraph();
         algorithm = new Algorithm(bohr);
@@ -22,24 +29,41 @@ public class GraphicAlgorithmProcessor {
         graphPanel.addMouseMotionListener(new MouseProcessor(this));
     }
 
+    /**
+     * Returns Algorithm
+     * @return Algorithm
+     */
     public Algorithm getAlgorithm() {
         return algorithm;
     }
 
+    /**
+     * Returns parent component. This is required to do some dialogs
+     * @return Container
+     */
     private Container getParentContainer(){
         return graphPanel.getParent();
     }
 
+    /**
+     * Starts drawing of Graph and gravity interaction
+     */
     public void start(){
         //Graph processing thread
         Thread processGraph = new Thread(graphPanel);
         processGraph.start();
     }
 
+    /**
+     * Returns GraphPanel
+     */
     public GraphPanel getGraphPanel() {
         return graphPanel;
     }
 
+    /**
+     * Returns Graph
+     */
     public Graph getGraph(){
         return bohr.getGraph();
     }
@@ -100,11 +124,14 @@ public class GraphicAlgorithmProcessor {
         ControlArea.getOutArea().setText(algorithm.resultsToString());
     }
 
+    /**
+     * Prepares step of Algorithm
+     */
     private void prepareStep() {
         if (!started){
             started = true;
             ControlArea.getSrcArea().setEditable(false);
-            algorithm.setText(ControlArea.getSrcArea().getText());
+            algorithm.setText(ControlArea.getSrcArea().getText().replaceAll("[^a-zA-Z0-9 ]", ""));
         }
         ControlArea.getOutArea().setText(null);
     }
@@ -139,9 +166,57 @@ public class GraphicAlgorithmProcessor {
         System.exit(0);
     }
 
+    void undoAction(ActionEvent e){
+        Algorithm alg = algorithm.getHistory().undo(algorithm);
+        if (alg!=null){
+            algorithm = alg;
+            bohr = (BohrWithGraph) alg.getBohr();
+            graphPanel.setGraph(bohr.getGraph());
+            ControlArea.getOutArea().setText(null);
+            ControlArea.getOutArea().setText(algorithm.resultsToString());
+        }
+        else{
+            JOptionPane.showMessageDialog(getParentContainer(), "Nothing to undo");
+        }
+    }
+
+    void redoAction(ActionEvent e){
+        Algorithm alg = algorithm.getHistory().redo();
+        if (alg!=null){
+            algorithm = alg;
+            bohr = (BohrWithGraph) alg.getBohr();
+            graphPanel.setGraph(bohr.getGraph());
+            ControlArea.getOutArea().setText(null);
+            ControlArea.getOutArea().setText(algorithm.resultsToString());
+        }
+    }
+
+    void openStringsAction(ActionEvent e){
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "Txt files only", "txt");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(getParentContainer());
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+            File fl = chooser.getSelectedFile();
+            Scanner fileScanner = null;
+            try {
+                fileScanner = new Scanner(fl);
+            } catch (FileNotFoundException e1) {
+                JOptionPane.showMessageDialog(getParentContainer(), "File was not open");
+            }
+            while (fileScanner.hasNext()){
+                String str = fileScanner.nextLine().replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase();
+                for (String strx : str.split(" ")){
+                    algorithm.addString(strx);
+                }
+            }
+        }
+    }
+
     private boolean started;
 
     private final GraphPanel graphPanel; //View
-    private final Algorithm algorithm; //Controller
-    private final BohrWithGraph bohr; //Model
+    private Algorithm algorithm; //Controller
+    private BohrWithGraph bohr; //Model
 }

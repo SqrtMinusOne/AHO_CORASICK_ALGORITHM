@@ -80,7 +80,7 @@ public class Edge {
         return name;
     }
 
-    public enum states {NORMAL, ROUND1, ROUND2};
+    public enum states {NORMAL, ROUND1, ROUND2}
 
     public states getState() {
         return state;

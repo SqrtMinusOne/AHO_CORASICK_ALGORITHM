@@ -53,8 +53,7 @@ public class ControlArea extends JPanel {
         JButton fileStrings = new JButton("Open strings");
         niceAddButtons(openBox, fileText, fileStrings);
         fileText.addActionListener(processor::openFileAction);
-      //  fileText.setEnabled(false);
-        fileStrings.setEnabled(false);
+        fileStrings.addActionListener(processor::openStringsAction);
         return openBox;
     }
 
@@ -85,8 +84,8 @@ public class ControlArea extends JPanel {
         niceAddButtons(stepsBox, stepButton, finishButton, undoButton, redoButton);
         stepButton.addActionListener(processor::stepAction);
         finishButton.addActionListener(processor::finishAction);
-        undoButton.setEnabled(false);
-        redoButton.setEnabled(false);
+        undoButton.addActionListener(processor::undoAction);
+        redoButton.addActionListener(processor::redoAction);
         return stepsBox;
     }
 
@@ -133,8 +132,8 @@ public class ControlArea extends JPanel {
 
     /**
      * Writes file to SrcArea
-     * @param file
-     * @throws FileNotFoundException
+     * @param file input file
+     * @throws FileNotFoundException if file was not found
      */
     public static void writeToSrcArea(File file) throws FileNotFoundException {
         String str = file.toString();

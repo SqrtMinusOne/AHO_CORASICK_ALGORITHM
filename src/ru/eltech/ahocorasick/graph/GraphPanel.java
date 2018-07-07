@@ -7,7 +7,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GraphPanel extends JPanel implements Runnable {
-    private final Graph graph;
+    public void setGraph(Graph graph) {
+        this.graph = graph;
+    }
+
+    private Graph graph;
 
     public GraphPanel(Graph graph ) {
         this.graph = graph;
@@ -163,16 +167,14 @@ public class GraphPanel extends JPanel implements Runnable {
      *                                      |
      *  source(X,Y) ------------------------|-------------------|----- dest(X,Y)
      *                                   center(X,Y)         shift(X,Y)
-     * @param g2d
-     * @param edge
      */
     private void drawEdge(Graphics2D g2d, Edge edge) {
         int centerX = (int) edge.getSourceX() - ((int) edge.getSourceX() - (int) edge.getDestX())/2;
         int centerY = (int) edge.getSourceY() - ((int) edge.getSourceY() - (int) edge.getDestY())/2;
-        float shiftX = 0, shiftY = 0; //Coordinates for arrow base
+        float shiftX, shiftY; //Coordinates for arrow base
         Polygon arrow = new Polygon();
         float angle = edge.getAngle() + (float) Math.PI/2; //Perpendicular for edge in center
-        float arrowAngle = 0; //Perpendicular for endge in arrow base point
+        float arrowAngle; //Perpendicular for endge in arrow base point
         if (angle > 2 * Math.PI)
             angle -= (float)(2*Math.PI);
 

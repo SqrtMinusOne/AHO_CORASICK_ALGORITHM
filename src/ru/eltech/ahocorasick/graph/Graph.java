@@ -30,6 +30,10 @@ public class Graph {
         return createEdge( idOne, idTwo, name , Edge.states.NORMAL);
     }
 
+    public void addVertex(Vertex v){
+        getVertices().add( v );
+    }
+
     public Edge createEdge(int idOne, int idTwo, String name, Edge.states state) {
         Vertex one = getVertexByID( idOne );
         Vertex two = getVertexByID( idTwo );
