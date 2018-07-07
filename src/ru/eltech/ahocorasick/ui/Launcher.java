@@ -7,28 +7,30 @@ import java.awt.*;
 
 public class Launcher extends JFrame {
 
-    private final JPanel graphArea;
+    public ControlArea getControlArea() {
+        return controlArea;
+    }
+
     private final ControlArea controlArea;
-    private final Menubar menubar;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(()-> new Launcher().setVisible(true));
     }
 
     private Launcher(){
-        graphArea = new JPanel();
+        GraphicAlgorithmProcessor processor = new GraphicAlgorithmProcessor();
+
+        JPanel graphArea = processor.getGraphPanel();
         graphArea.setBorder(new LineBorder(Color.BLACK, 5));
         graphArea.setPreferredSize(new Dimension(700, 550));
         graphArea.setBackground(Color.white); //temporary colour
 
-        controlArea = new ControlArea();
+        controlArea = new ControlArea(processor);
         controlArea.setLayout(new BoxLayout(controlArea, BoxLayout.Y_AXIS)); // stretching
         controlArea.setPreferredSize(new Dimension(300, 550));
 
-
-        menubar = new Menubar();
+        Menubar menubar = new Menubar(processor);
         menubar.setMaximumSize(new Dimension( 100000, 10));
-
 
         JPanel rootWithmenu = new JPanel();
         JPanel rootWindow = new JPanel();
@@ -46,5 +48,7 @@ public class Launcher extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setContentPane(rootWithmenu);
         pack();
+
+        processor.start();
     }
 }

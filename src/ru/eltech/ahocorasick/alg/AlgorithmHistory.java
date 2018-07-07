@@ -5,7 +5,7 @@ import java.util.LinkedList;
 /**
  * This class is used to keep track on algorithm states.
  * This class needs to be used with caution, because in greatly increases the
- * amount of time required for one operation.
+ * amount of time required for source operation.
  */
 public class AlgorithmHistory {
 
@@ -136,5 +136,5 @@ public class AlgorithmHistory {
     private boolean on;
     private int index;
     private final int max;
-    private LinkedList<String> states;
+    private final LinkedList<String> states;
 }

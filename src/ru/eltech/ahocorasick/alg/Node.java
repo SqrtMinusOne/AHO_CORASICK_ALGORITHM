@@ -318,10 +318,10 @@ public class Node {
     private final int nodeNumber;
     private Node parent; //Link to parent
     private char charToParent; //Char to parent
-    private ArrayList<Integer> leafPatternNumber;
+    private final ArrayList<Integer> leafPatternNumber;
     private boolean isLeaf; //is it leaf
-    private HashMap<Character, Node> son; //HashMap of children
-    private HashMap<Character, Node> go; //HashMap of transitions
+    private final HashMap<Character, Node> son; //HashMap of children
+    private final HashMap<Character, Node> go; //HashMap of transitions
     private Node suffLink; //Lazy recursion suffix link
     private Node up; //Lazy recursion compressed suffix link
 }
