@@ -72,15 +72,16 @@ public class GraphPanel extends JPanel implements Runnable {
         }
 
         //Calculating forces, pushing items away from the borders
+        float newBorderCoef = borderCoef/(float)Math.pow(graph.getVertices().size(), 0.3);
         if (vertex.getX() < this.getWidth()/2)
-            xvel += Math.pow(this.getWidth()/2 - vertex.getX(), 4)/borderCoef;
+            xvel += Math.pow(this.getWidth()/2 - vertex.getX(), 4)/newBorderCoef;
         else
-            xvel -= Math.pow(this.getWidth()/2 - vertex.getX(), 4)/borderCoef;
+            xvel -= Math.pow(this.getWidth()/2 - vertex.getX(), 4)/newBorderCoef;
 
         if (vertex.getY() < this.getHeight()/2)
-            yvel += Math.pow(this.getHeight()/2 - vertex.getY(), 4)/borderCoef;
+            yvel += Math.pow(this.getHeight()/2 - vertex.getY(), 4)/newBorderCoef;
         else
-            yvel -= Math.pow(this.getHeight()/2 - vertex.getY(), 4)/borderCoef;
+            yvel -= Math.pow(this.getHeight()/2 - vertex.getY(), 4)/newBorderCoef;
 
         if ((Math.abs(xvel) < 0.1) && (Math.abs(yvel) < 0.1)){
             xvel = yvel = 0;
@@ -89,8 +90,8 @@ public class GraphPanel extends JPanel implements Runnable {
         float newx = vertex.getX() + xvel;
         float newy = vertex.getY() + yvel;
 
-        if ((0 < newx) && (newx < this.getWidth()) &&
-                (0 < newy) && (newy < this.getHeight())){
+        if ((0 <= newx) && (newx <= this.getWidth()) &&
+                (0 <= newy) && (newy <= this.getHeight())){
             vertex.setNewX(newx);
             vertex.setNewY(newy);
         }
@@ -192,7 +193,7 @@ public class GraphPanel extends JPanel implements Runnable {
             //Line
             float dCoef = 0.5f;
             if (edge.getState() == Edge.states.ROUND1)
-                g2d.setColor(Color.black);
+                g2d.setColor(Color.getHSBColor(0.34f,0.93f,0.63f));
             else if (edge.getState() == Edge.states.ROUND2){
                 g2d.setColor(Color.red);
                 dCoef = 1;

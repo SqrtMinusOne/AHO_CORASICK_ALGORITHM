@@ -110,7 +110,8 @@ public class BohrWithGraph extends Bohr {
                             Character.toString(child.getKey()));
             }
             if ((node.getSuffLink()!=null) && ((node.getSuffLink()) != root) &&
-                    (graph.getEdge(node.getNodeNumber(), node.getSuffLink().getNodeNumber()) == null))
+                    (graph.getEdge(node.getNodeNumber(), node.getSuffLink().getNodeNumber()) == null)
+                    && (node.getUp()!=node.getSuffLink()))
             {
                 graph.createEdge(node.getNodeNumber(), node.getSuffLink().getNodeNumber(),
                         "", Edge.states.ROUND1);
