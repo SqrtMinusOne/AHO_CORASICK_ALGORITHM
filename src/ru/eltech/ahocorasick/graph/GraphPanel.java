@@ -108,8 +108,6 @@ public class GraphPanel extends JPanel implements Runnable {
         for ( Edge edge : graph.getEdges()) {
             drawEdge(g2d, edge);
         }
-     //   g2d.setColor( Color.green );
-     //   g2d.fillOval( getWidth() / 2 - 2, getHeight() / 2 - 2, 5, 5 );
     }
 
     private void drawVertex(Graphics2D g, Vertex vertex) {
@@ -159,18 +157,36 @@ public class GraphPanel extends JPanel implements Runnable {
         Color grad1t;
     }
 
+    /**
+     *                                   bezier(X,Y)
+     *                                      |
+     *                                      |
+     *  source(X,Y) ------------------------|-------------------|----- dest(X,Y)
+     *                                   center(X,Y)         shift(X,Y)
+     * @param g2d
+     * @param edge
+     */
     private void drawEdge(Graphics2D g2d, Edge edge) {
         int centerX = (int) edge.getSourceX() - ((int) edge.getSourceX() - (int) edge.getDestX())/2;
         int centerY = (int) edge.getSourceY() - ((int) edge.getSourceY() - (int) edge.getDestY())/2;
-        float angle = edge.getAngle() + (float) Math.PI/2;
+        float shiftX = 0, shiftY = 0; //Coordinates for arrow base
+        Polygon arrow = new Polygon();
+        float angle = edge.getAngle() + (float) Math.PI/2; //Perpendicular for edge in center
+        float arrowAngle = 0; //Perpendicular for endge in arrow base point
         if (angle > 2 * Math.PI)
             angle -= (float)(2*Math.PI);
 
         if (edge.getState() == Edge.states.NORMAL) {
+            //Line
             g2d.setColor(Color.black);
             g2d.drawLine((int) edge.getSourceX(), (int) edge.getSourceY(), (int) edge.getDestX(), (int) edge.getDestY());
+            //Arrow
+            shiftX = edge.getDestX() + Edge.arrowSize * (float) Math.sin(edge.getAngle());
+            shiftY = edge.getDestY() + Edge.arrowSize * (float) Math.cos(edge.getAngle());
+            arrowAngle = angle;
         }
         else{
+            //Line
             float dCoef = 0.5f;
             if (edge.getState() == Edge.states.ROUND1)
                 g2d.setColor(Color.black);
@@ -186,11 +202,29 @@ public class GraphPanel extends JPanel implements Runnable {
             curve.curveTo(edge.getSourceX(), edge.getSourceY(),
                     bezierX, bezierY, edge.getDestX(), edge.getDestY());
             g2d.draw(curve);
+            //Arrow
+            float delta = (l - Edge.arrowSize)/l;
+            float t1x = (edge.getSourceX()*(1-delta) + bezierX*(delta));
+            float t1y = (edge.getSourceY()*(1-delta) + bezierY*(delta));
+            float t2x = (bezierX*(1-delta) + edge.getDestX()*(delta));
+            float t2y = (bezierY*(1-delta) + edge.getDestY()*(delta));
+            shiftX = (t1x*(1-delta) + t2x*(delta));
+            shiftY = (t1y*(1-delta) + t2y*(delta));
+            arrowAngle = (float)Edge.getAngle(t1x-shiftX, t1y-shiftY) + (float) Math.PI/2;
+            if (arrowAngle > 2 * Math.PI)
+                arrowAngle -= (float)(2*Math.PI);
         }
 
-        //   g2d.drawLine(centerX, centerY, newCenterX, newCenterY);
+        arrow.addPoint((int) edge.getDestX(), (int) edge.getDestY());
+        arrow.addPoint((int)(shiftX + Edge.arrowSize * Math.sin(arrowAngle)),
+                (int)(shiftY + Edge.arrowSize * Math.cos(arrowAngle)));
+        arrow.addPoint((int)(shiftX - Edge.arrowSize * Math.sin(arrowAngle)),
+                (int)(shiftY - Edge.arrowSize * Math.cos(arrowAngle)));
+        g2d.fillPolygon(arrow);
+
         g2d.drawString(edge.getName(),
                 centerX + (int)(Edge.textDistance*Math.sin(angle)),
                 centerY + (int)(Edge.textDistance*Math.cos(angle)));
     }
+
 }

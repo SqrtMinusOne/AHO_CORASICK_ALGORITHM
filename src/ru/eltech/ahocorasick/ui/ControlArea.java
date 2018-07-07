@@ -53,7 +53,7 @@ public class ControlArea extends JPanel {
         JButton fileStrings = new JButton("Open strings");
         niceAddButtons(openBox, fileText, fileStrings);
         fileText.addActionListener(processor::openFileAction);
-        fileText.setEnabled(false);
+      //  fileText.setEnabled(false);
         fileStrings.setEnabled(false);
         return openBox;
     }

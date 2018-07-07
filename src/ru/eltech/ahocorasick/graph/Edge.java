@@ -49,6 +49,11 @@ public class Edge {
     public float getAngle(){
         float dy = source.getY() - dest.getY();
         float dx = source.getX() - dest.getX();
+        double res = getAngle(dx, dy);
+        return (float) res;
+    }
+
+    public static double getAngle(float dx, float dy) {
         double res;
         if ((dy > 0) && (dx > 0))
             res =  Math.atan(dx/dy);
@@ -60,7 +65,7 @@ public class Edge {
             res = Math.PI/2;
         else
             res = 3*Math.PI/2;
-        return (float) res;
+        return res;
     }
 
     public Vertex getSource() {
@@ -87,5 +92,6 @@ public class Edge {
     private final String name;
     public static final float textDistance = 15;
     public static final float curveCoef = 0.25f;
+    public static final float arrowSize = 10f;
 }
 

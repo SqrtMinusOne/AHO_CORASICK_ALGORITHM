@@ -47,7 +47,8 @@ public class GraphicAlgorithmProcessor {
     /**
      * Open file ActionListener
      */
-    void openFileAction(ActionEvent e) {
+    void openFileAction(ActionEvent e) //TODO Preprocessing
+    {
         JFileChooser chooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Txt files only", "txt");
@@ -137,7 +138,6 @@ public class GraphicAlgorithmProcessor {
     void exitAction(ActionEvent e){
         System.exit(0);
     }
-
 
     private boolean started;
 
