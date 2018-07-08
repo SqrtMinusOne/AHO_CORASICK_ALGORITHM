@@ -30,6 +30,14 @@ public class Graph {
         return createEdge( idOne, idTwo, name , Edge.states.NORMAL);
     }
 
+    public Edge createEdge(Vertex one, Vertex two, String name){
+        Edge edge = new Edge ( one, two, name);
+        one.getEdges().add( edge );
+        two.getEdges().add( edge );
+        getEdges().add( edge );
+        return edge;
+    }
+
     public void addVertex(Vertex v){
         getVertices().add( v );
     }

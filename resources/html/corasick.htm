@@ -1,0 +1,417 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML xmlns="http://www.w3.org/TR/REC-html40" xmlns:o = 
+"urn:schemas-microsoft-com:office:office" xmlns:dt = 
+"uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"><HEAD><META content="IE=5.0000" 
+http-equiv="X-UA-Compatible">
+
+<META content="text/html; charset=utf-8" http-equiv=Content-Type>
+<META name=ProgId content=OneNote.File>
+<META name=GENERATOR content="MSHTML 11.00.10570.1001"><LINK id=Main-File 
+rel=Main-File href="file9898.htm"><LINK rel=File-List 
+href="file9898_files/filelist.xml"></HEAD>
+<BODY lang=ru style="FONT-SIZE: 11pt; FONT-FAMILY: Calibri">
+<DIV style="DIRECTION: ltr">
+<DIV style="WIDTH: 6.272in; MARGIN-TOP: 0in; DIRECTION: ltr; MARGIN-LEFT: 0in">
+<DIV 
+style="WIDTH: 3.192in; MARGIN-TOP: 0in; DIRECTION: ltr; MARGIN-LEFT: 0.021in">
+<P style='FONT-SIZE: 20pt; FONT-FAMILY: "Calibri Light"; MARGIN: 0in'>Алгоритм 
+Ахо-Корасик</P></DIV>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><a href="help.htm">Назад</a></P>
+<DIV 
+style="WIDTH: 1.811in; MARGIN-TOP: 0.038in; DIRECTION: ltr; MARGIN-LEFT: 0.021in">
+<DIV 
+style="WIDTH: 6.272in; MARGIN-TOP: 0.43in; DIRECTION: ltr; MARGIN-LEFT: 0in">
+<P 
+style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; TEXT-ALIGN: center; MARGIN: 0in"><SPAN 
+style="TEXT-DECORATION: underline; FONT-WEIGHT: bold">Алгоритм 
+Ахо-Корасик
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN 
+style="TEXT-DECORATION: underline; FONT-WEIGHT: bold">Постановка 
+задачи</SPAN></P>
+<P style="FONT-SIZE: 14pt; MARGIN: 0in"><IMG 
+src="Алгоритм%20Ахо-Корасик_files/mhtFDB4(1).tmp" width=582 height=24></P>
+<P style="FONT-SIZE: 14pt; MARGIN: 0in"><IMG 
+src="Алгоритм%20Ахо-Корасик_files/mhtFDE6(1).tmp" width=358 height=24></P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">Нужно найти, какие 
+образцы из данного множества встречаются в этом тексте. Применение алгоритма 
+Кнута-Морриса-Пратта неэффективно, т.к. алгоритм нужно будет запустить для 
+каждого шаблона.</P>
+<P lang=en-US 
+style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN 
+style="FONT-WEIGHT: bold">Задача о словаре</SPAN></P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">Пусть есть 
+словарь. Задача - как можно более эффективно хранить в нём слова. Структура 
+данных, подходящая для этой цели - <SPAN 
+style="FONT-WEIGHT: bold">бор</SPAN>.</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">Если после этого 
+стоит задача найти в тексте все слова из словаря, то рассматриваемый алгоритм 
+как раз эффективно решает эту задачу.</P>
+<P lang=en-US 
+style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN 
+style="TEXT-DECORATION: underline; FONT-WEIGHT: bold">Построение бора</SPAN></P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN lang=ru 
+style="FONT-WEIGHT: bold">Бор</SPAN><SPAN lang=en-US style="FONT-WEIGHT: bold"> 
+(Trie)</SPAN><SPAN lang=ru style="FONT-WEIGHT: bold"> </SPAN><SPAN lang=ru>- 
+дерево с корнем в некоторой вершине, каждое ребро которого подписано некоторой 
+буквой. </SPAN></P>
+<P style="FONT-SIZE: 14pt; MARGIN: 0in"><IMG 
+src="Алгоритм%20Ахо-Корасик_files/mhtFE09(1).tmp" width=402 height=24></P>
+<P style="MARGIN: 0in"><IMG src="Алгоритм%20Ахо-Корасик_files/mhtFE2B(1).tmp" 
+width=480 height=201></P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">У дерева каждая 
+дуга имеет пометку в виде одного символа, и не может быть двух дуг из одной 
+вершины, которые имеют одинаковую пометку.</P>
+<P lang=x-none 
+style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN 
+style="FONT-STYLE: italic">Элемент бора на псевдокоде:</SPAN></P>
+<P lang=x-none 
+style="FONT-SIZE: 11.5pt; FONT-FAMILY: Consolas; MARGIN: 0in"><SPAN 
+style="FONT-WEIGHT: bold">struct</SPAN> Node:<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN><SPAN 
+style="FONT-WEIGHT: bold">Node</SPAN> son[k]<SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN><SPAN style="COLOR: green">// массив сыновей</SPAN><BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN><SPAN 
+style="FONT-WEIGHT: bold">Node</SPAN> go[k]<SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN><SPAN style="COLOR: green">// массив переходов (запоминаем переходы в 
+ленивой рекурсии), используемый для вычисления суффиксных ссылок</SPAN><BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN><SPAN 
+style="FONT-WEIGHT: bold">Node</SPAN> parent<SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN><SPAN style="COLOR: green">// вершина родитель</SPAN><BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN><SPAN 
+style="FONT-WEIGHT: bold">Node</SPAN> suffLink<SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN><SPAN style="COLOR: green">// суффиксная ссылка (вычисляем в ленивой 
+рекурсии)</SPAN><BR><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; 
+</SPAN><SPAN style="FONT-WEIGHT: bold">Node</SPAN> up<SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN><SPAN style="COLOR: green">// сжатая суффиксная ссылка</SPAN><BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN><SPAN 
+style="FONT-WEIGHT: bold">char</SPAN> charToParent<SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN><SPAN style="COLOR: green">// символ, ведущий к родителю</SPAN><BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN><SPAN 
+style="FONT-WEIGHT: bold">bool</SPAN> isLeaf<SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN><SPAN style="COLOR: green">// флаг, является ли вершина 
+терминалом</SPAN><BR><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; 
+</SPAN><SPAN style="FONT-WEIGHT: bold">vector&lt;int&gt;</SPAN> 
+leafPatternNumber<SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN><SPAN 
+style="COLOR: green">// номера строк, за которые отвечает терминал</SPAN></P>
+<P lang=x-none 
+style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN 
+style="FONT-STYLE: italic">Добавление слова в бор на псевдокоде:</SPAN></P>
+<P style="FONT-SIZE: 11.5pt; FONT-FAMILY: Consolas; MARGIN: 0in"><SPAN 
+lang=x-none style="FONT-WEIGHT: bold">fun</SPAN><SPAN lang=x-none> 
+addString(</SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">string</SPAN><SPAN 
+lang=x-none> s, </SPAN><SPAN lang=x-none 
+style="FONT-WEIGHT: bold">int</SPAN><SPAN lang=x-none> patternNumber):<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN></SPAN><SPAN lang=x-none 
+style="FONT-WEIGHT: bold">Node</SPAN><SPAN lang=x-none> cur = root<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN></SPAN><SPAN lang=x-none 
+style="FONT-WEIGHT: bold">for</SPAN><SPAN lang=x-none> i = 0 </SPAN><SPAN 
+lang=x-none style="FONT-WEIGHT: bold">to</SPAN><SPAN lang=x-none> s.length - 
+1<BR><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">char</SPAN><SPAN 
+lang=x-none> c = s[i]<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">if</SPAN><SPAN 
+lang=x-none> cur.son[c] == 0<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN>cur.son[c] = Node<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="COLOR: green">/* </SPAN><SPAN lang=ru 
+style="COLOR: green">здесь</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">также</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">нужно</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">обнулить</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">указатели</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">на</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">переходы</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">и</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">сыновей</SPAN><SPAN lang=x-none style="COLOR: green"> 
+*/</SPAN><SPAN lang=x-none><BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN>cur.son[c].suffLink = 0<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN>cur.son[c].up = 0<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN>cur.son[c].parent = cur<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN>cur.son[c].charToParent = c<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN>cur.son[c].isLeaf = </SPAN><SPAN lang=x-none 
+style="FONT-STYLE: italic">false</SPAN><SPAN lang=x-none><BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>cur 
+= cur.son[c]<BR><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; 
+</SPAN>cur.isLeaf = </SPAN><SPAN lang=x-none 
+style="FONT-STYLE: italic">true</SPAN><SPAN lang=x-none><BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; 
+</SPAN>cur.leafPatternNumber.pushBack(patternNumber)</SPAN></P>
+<P style="FONT-SIZE: 14pt; MARGIN: 0in"><IMG 
+src="Алгоритм%20Ахо-Корасик_files/mhtFE3D(1).tmp" width=604 height=92></P>
+<P lang=x-none 
+style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN 
+style="TEXT-DECORATION: underline; FONT-WEIGHT: bold">Переходы по 
+бору</SPAN></P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">Заведем несколько 
+функций для перехода по бору:</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">Во-первых, нужно 
+определить функцию перехода "наверх":</P>
+<P style="FONT-SIZE: 14pt; MARGIN: 0in"><IMG 
+src="Алгоритм%20Ахо-Корасик_files/mhtFE60(1).tmp" width=436 height=24></P>
+<P lang=x-IV_mathan 
+style='FONT-SIZE: 14pt; FONT-FAMILY: "Cambria Math"; MARGIN: 0in'>&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN 
+style="FONT-WEIGHT: bold">Суффиксные ссылки</SPAN></P>
+<P style="FONT-SIZE: 14pt; MARGIN: 0in"><IMG 
+src="Алгоритм%20Ахо-Корасик_files/mhtFE72(1).tmp" width=608 height=50></P>
+<P style="FONT-SIZE: 14pt; MARGIN: 0in"><IMG 
+src="Алгоритм%20Ахо-Корасик_files/mhtFE95(1).tmp" width=600 height=92></P>
+<P style="FONT-SIZE: 14pt; MARGIN: 0in"><IMG 
+src="Алгоритм%20Ахо-Корасик_files/mhtFEA7(1).tmp" width=610 height=46></P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">Суффиксные ссылки 
+для вышеуказанного примера:</P>
+<P style="MARGIN: 0in"><IMG src="Алгоритм%20Ахо-Корасик_files/mhtFEC9(1).tmp" 
+width=505 height=263></P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">Если ссылка не 
+обозначена, значит, она ведёт в корень.</P>
+<P lang=x-none 
+style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN 
+style="FONT-STYLE: italic">Вычисление суффиксной ссылки на псевдокоде</SPAN></P>
+<P style="FONT-SIZE: 11.5pt; FONT-FAMILY: Consolas; MARGIN: 0in"><SPAN 
+lang=x-none style="FONT-WEIGHT: bold">Node</SPAN><SPAN lang=x-none> 
+getSuffLink(</SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">Node</SPAN><SPAN 
+lang=x-none> v):<BR><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">if</SPAN><SPAN 
+lang=x-none> v.suffLink == </SPAN><SPAN lang=x-none 
+style="FONT-STYLE: italic">null</SPAN><SPAN lang=x-none><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="COLOR: green">// </SPAN><SPAN lang=ru 
+style="COLOR: green">если</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">суффиксная</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">ссылка</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">ещё</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru style="COLOR: green">не</SPAN><SPAN 
+lang=x-none style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">вычислена</SPAN><SPAN lang=x-none><BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">if</SPAN><SPAN 
+lang=x-none> v == root </SPAN><SPAN lang=x-none 
+style="FONT-WEIGHT: bold">or</SPAN><SPAN lang=x-none> v.parent == root<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN>v.suffLink = root<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">else</SPAN><SPAN 
+lang=x-none><BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN>v.suffLink = getLink(getSuffLink(v.parent), v.charToParent)<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN></SPAN><SPAN lang=x-none 
+style="FONT-WEIGHT: bold">return</SPAN><SPAN lang=x-none> v.suffLink</SPAN></P>
+<P lang=x-none 
+style="FONT-SIZE: 11.5pt; FONT-FAMILY: Consolas; MARGIN: 0in">&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">В данном случае и 
+далее используется <SPAN style="FONT-WEIGHT: bold">ленивая рекурсия </SPAN>- 
+ссылки не вычисляются, если не нужны, но вычисленные ссылки запоминаются. Это 
+позволяет экономить ресурсы.</P>
+<P lang=x-none 
+style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN 
+style="FONT-WEIGHT: bold">Переход по бору</SPAN></P>
+<P style="FONT-SIZE: 14pt; MARGIN: 0in"><IMG 
+src="Алгоритм%20Ахо-Корасик_files/mhtFEDC(1).tmp" width=600 height=96></P>
+<P style="FONT-SIZE: 14pt; MARGIN: 0in"><IMG 
+src="Алгоритм%20Ахо-Корасик_files/mhtFEEF(1).tmp" width=554 height=24></P>
+<P lang=en-US 
+style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN 
+style="FONT-STYLE: italic">Функция перехода на псевдокоде</SPAN></P>
+<P style="FONT-SIZE: 11.5pt; FONT-FAMILY: Consolas; MARGIN: 0in"><SPAN 
+lang=x-none style="FONT-WEIGHT: bold">Node</SPAN><SPAN lang=x-none> 
+getLink(</SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">Node</SPAN><SPAN 
+lang=x-none> v, </SPAN><SPAN lang=x-none 
+style="FONT-WEIGHT: bold">char</SPAN><SPAN lang=x-none> c): <BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp; </SPAN></SPAN><SPAN lang=x-none 
+style="FONT-WEIGHT: bold">if</SPAN><SPAN lang=x-none> v.go[c] == </SPAN><SPAN 
+lang=x-none style="FONT-STYLE: italic">null</SPAN><SPAN lang=x-none><SPAN 
+style="mso-spacerun: yes">&nbsp; </SPAN></SPAN><SPAN lang=x-none 
+style="COLOR: green">// </SPAN><SPAN lang=ru 
+style="COLOR: green">если</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">переход</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru style="COLOR: green">по</SPAN><SPAN 
+lang=x-none style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">символу</SPAN><SPAN lang=x-none style="COLOR: green"> c 
+</SPAN><SPAN lang=ru style="COLOR: green">ещё</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru style="COLOR: green">не</SPAN><SPAN 
+lang=x-none style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">вычислен</SPAN><SPAN lang=x-none><BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">if</SPAN><SPAN 
+lang=x-none> v.son[c]<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN>v.go[c] = v.son[c]<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">else if</SPAN><SPAN 
+lang=x-none> v == root <BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN>v.go[c] = root <BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">else</SPAN><SPAN 
+lang=x-none> <BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN>v.go[c] = getLink(getSuffLink(v), c)<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN></SPAN><SPAN lang=x-none 
+style="FONT-WEIGHT: bold">return</SPAN><SPAN lang=x-none> v.go[c]</SPAN></P>
+<P lang=x-none 
+style="FONT-SIZE: 11.5pt; FONT-FAMILY: Consolas; MARGIN: 0in">&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN 
+style="FONT-WEIGHT: bold">Сжатые суффиксные ссылки</SPAN></P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">При построении 
+автомата может возникнуть ситуация, что ветвление есть не на каждом символе. 
+Тогда можно использовать <SPAN style="FONT-WEIGHT: bold">сжатые суффиксные 
+ссылки</SPAN>:</P>
+<P lang=x-IV_mathan 
+style='FONT-SIZE: 14pt; FONT-FAMILY: "Cambria Math"; MARGIN: 0in'><IMG 
+src="Алгоритм%20Ахо-Корасик_files/mhtFF11(1).tmp" width=448 height=84></P>
+<P style="FONT-SIZE: 14pt; MARGIN: 0in"><IMG 
+src="Алгоритм%20Ахо-Корасик_files/mhtFF24(1).tmp" width=600 height=48></P>
+<P lang=x-none 
+style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN 
+style="FONT-STYLE: italic">Вычисление сжатых суффиксных ссылок на 
+псевдокоде:</SPAN></P>
+<P style="FONT-SIZE: 11.5pt; FONT-FAMILY: Consolas; MARGIN: 0in"><SPAN 
+lang=x-none style="FONT-WEIGHT: bold">Node</SPAN><SPAN lang=x-none> 
+getUp(</SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">Node</SPAN><SPAN 
+lang=x-none> v):<BR><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">if</SPAN><SPAN 
+lang=x-none> v.up == </SPAN><SPAN lang=x-none 
+style="FONT-STYLE: italic">null</SPAN><SPAN lang=ru> </SPAN><SPAN lang=x-none 
+style="COLOR: green">// </SPAN><SPAN lang=ru 
+style="COLOR: green">если</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">сжатая</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">суффиксная</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">ссылка</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru style="COLOR: green">ещё</SPAN><SPAN 
+lang=x-none style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">не</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">вычислена</SPAN><SPAN 
+lang=x-none><BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">if</SPAN><SPAN 
+lang=x-none> getSuffLink(v).isLeaf<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN>v.up = getSuffLink(v)<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">else if</SPAN><SPAN 
+lang=x-none> getSuffLink(v) == root<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN>v.up = root<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">else</SPAN><SPAN 
+lang=x-none> <BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN>v.up = getUp(getSuffLink(v))<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN></SPAN><SPAN lang=x-none 
+style="FONT-WEIGHT: bold">return</SPAN><SPAN lang=x-none> v.up</SPAN></P>
+<P lang=x-none 
+style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">В результате 
+вышеописанных действий построен конечный детерминированный автомат.</P>
+<P lang=x-none 
+style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN 
+style="TEXT-DECORATION: underline; FONT-WEIGHT: bold">Использование 
+автомата</SPAN></P>
+<P style="FONT-SIZE: 14pt; MARGIN: 0in"><IMG 
+src="Алгоритм%20Ахо-Корасик_files/mhtFF75(1).tmp" width=608 height=116></P>
+<P lang=x-none 
+style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in">&nbsp;</P>
+<P style="FONT-SIZE: 14pt; FONT-FAMILY: Calibri; MARGIN: 0in"><SPAN 
+style="FONT-STYLE: italic">Использование автомата на псевдокоде:</SPAN></P>
+<P style="FONT-SIZE: 11.5pt; FONT-FAMILY: Consolas; MARGIN: 0in"><SPAN 
+lang=x-none style="FONT-WEIGHT: bold">fun</SPAN><SPAN lang=x-none> 
+processText(</SPAN><SPAN lang=x-none 
+style="FONT-WEIGHT: bold">string</SPAN><SPAN lang=x-none> t):<SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp; </SPAN><BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN></SPAN><SPAN lang=x-none 
+style="FONT-WEIGHT: bold">Node</SPAN><SPAN lang=x-none> cur = root<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN></SPAN><SPAN lang=x-none 
+style="FONT-WEIGHT: bold">for</SPAN><SPAN lang=x-none> i = 0 </SPAN><SPAN 
+lang=x-none style="FONT-WEIGHT: bold">to</SPAN><SPAN lang=x-none> t.length - 1 
+<BR><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="FONT-WEIGHT: bold">char</SPAN><SPAN 
+lang=x-none> c = t[i] - 'a'<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>cur 
+= getLink(cur, c)<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=x-none style="COLOR: green">/* </SPAN><SPAN lang=ru 
+style="COLOR: green">В</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">этом</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">месте</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">кода</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">должен</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">выполняться</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">переход</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">по</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="FONT-WEIGHT: bold; COLOR: green">сжатой</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">суффиксной</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">ссылке</SPAN><SPAN lang=x-none 
+style="COLOR: green"> getUp(cur). </SPAN><SPAN lang=ru 
+style="COLOR: green">Для</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">вершины</SPAN><SPAN lang=x-none 
+style="COLOR: green">,<BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=ru style="COLOR: green">обнаруженной</SPAN><SPAN 
+lang=x-none style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">по</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">ней</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru style="COLOR: green">тоже</SPAN><SPAN 
+lang=x-none style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">ставим</SPAN><SPAN lang=x-none style="COLOR: green">, 
+</SPAN><SPAN lang=ru style="COLOR: green">что</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru style="COLOR: green">она</SPAN><SPAN 
+lang=x-none style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">найдена</SPAN><SPAN lang=x-none style="COLOR: green">, 
+</SPAN><SPAN lang=ru style="COLOR: green">затем</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">повторяем</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">для</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru style="COLOR: green">её</SPAN><SPAN 
+lang=x-none style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">сжатой</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">суффиксной</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">ссылки</SPAN><SPAN lang=x-none 
+style="COLOR: green"><BR><SPAN 
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</SPAN></SPAN><SPAN lang=ru style="COLOR: green">и</SPAN><SPAN lang=x-none 
+style="COLOR: green"> </SPAN><SPAN lang=ru style="COLOR: green">так</SPAN><SPAN 
+lang=x-none style="COLOR: green"> </SPAN><SPAN lang=ru 
+style="COLOR: green">до</SPAN><SPAN lang=x-none style="COLOR: green"> 
+</SPAN><SPAN lang=ru style="COLOR: green">корня</SPAN><SPAN lang=x-none 
+style="COLOR: green">. */</SPAN></P></DIV></DIV></DIV>
+<DIV>
+<P style="MARGIN: 0in">&nbsp;</P>
+<P 
+style="FONT-SIZE: 9pt; FONT-FAMILY: Arial; COLOR: #969696; DIRECTION: ltr; TEXT-ALIGN: left; MARGIN: 0in">Created 
+with Microsoft OneNote 2016.</P></DIV></BODY></HTML>

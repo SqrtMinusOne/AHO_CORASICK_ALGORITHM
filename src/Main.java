@@ -1,8 +1,21 @@
-import ru.eltech.ahocorasick.alg.ConsoleAlgorithmProcessor;
+import ru.eltech.ahocorasick.ui.Launcher;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
-        ConsoleAlgorithmProcessor cp = new ConsoleAlgorithmProcessor(System.out, System.in);
-        cp.startConsole();
+        Launcher lnc = new Launcher();
+        try {
+            Image icon = ImageIO.read(Launcher.class.getResourceAsStream("icon.png"));
+            lnc.setIconImage(icon);
+        }
+        catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        SwingUtilities.invokeLater(()-> lnc.setVisible(true));
     }
 }

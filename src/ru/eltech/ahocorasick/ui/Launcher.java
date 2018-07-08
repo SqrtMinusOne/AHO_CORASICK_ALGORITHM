@@ -1,10 +1,8 @@
 package ru.eltech.ahocorasick.ui;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.io.IOException;
 
 
 public class Launcher extends JFrame {
@@ -15,20 +13,7 @@ public class Launcher extends JFrame {
 
     private final ControlArea controlArea;
 
-    public static void main(String[] args) {
-        Launcher lnc = new Launcher();
-        try {
-            Image icon = ImageIO.read(Launcher.class.getResourceAsStream("icon.png"));
-            lnc.setIconImage(icon);
-        }
-        catch (IOException ex)
-        {
-            ex.printStackTrace();
-        }
-        SwingUtilities.invokeLater(()-> lnc.setVisible(true));
-    }
-
-    private Launcher(){
+    public Launcher(){
         GraphicAlgorithmProcessor processor = new GraphicAlgorithmProcessor();
 
         JPanel graphArea = processor.getGraphPanel();
