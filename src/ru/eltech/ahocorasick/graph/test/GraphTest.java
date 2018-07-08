@@ -8,7 +8,7 @@ import ru.eltech.ahocorasick.graph.Vertex;
 public class GraphTest {
     @Test
     public void GraphTreadSafeTest() {
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 100; i++)
             doDangerousActions();
     }
 

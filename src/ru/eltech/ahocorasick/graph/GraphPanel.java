@@ -22,11 +22,13 @@ public class GraphPanel extends JPanel implements Runnable {
 
         while ( true ) {
             for (Vertex vertex : graph.getVertices()) {
-                calculateForces(vertex);
+                if (!vertex.isPressed())
+                    calculateForces(vertex);
             }
 
             for (Vertex vertex : graph.getVertices()) {
-                vertex.adjust();
+                if (!vertex.isPressed())
+                    vertex.adjust();
             }
 
             this.repaint();

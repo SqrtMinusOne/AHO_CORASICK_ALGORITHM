@@ -2,16 +2,26 @@ package ru.eltech.ahocorasick.ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 
 public class Menubar extends JMenuBar {
-    private final JMenu file;
-    private final JMenu help;
 
     public Menubar(GraphicAlgorithmProcessor processor){
         super();
         Font font = new Font("Times New Roman", Font.PLAIN, 13);
-        file = createMenu("File", font);
+        JMenu file = makeFile(processor, font);
+        JMenu help = makeHelp(font);
+        add(file);
+        add(help); //add smth
+    }
+
+    private JMenu makeFile(GraphicAlgorithmProcessor processor, Font font) {
+        JMenu file = createMenu("File", font);
         JMenu openMenu = new JMenu("Open");
         openMenu.setFont(font);
         file.add(openMenu);
@@ -27,23 +37,42 @@ public class Menubar extends JMenuBar {
         openMenu.add(openTextItem);
         openMenu.add(openStringsItem);
         openMenu.add(openGraphItem);
+        JMenu fileSave = createMenu("Save", font);
         JMenuItem saveResItem = new JMenuItem("Save results");
         saveResItem.setFont(font);
-        file.add(saveResItem);
+        fileSave.add(saveResItem);
         saveResItem.addActionListener(processor::saveResAction);
         JMenuItem saveGraphItem = new JMenuItem("Save graph");
         saveGraphItem.setFont(font);
-        file.add(saveGraphItem);
+        fileSave.add(saveGraphItem);
         saveGraphItem.addActionListener(processor::saveAlgorithmAction);
+        file.add(fileSave);
         file.addSeparator();
         JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.setFont(font);
         file.add(exitItem);
         exitItem.addActionListener(processor::exitAction);
-        help = createMenu("Help", font);
-        add(file);
-        add(help); //add smth
+        return file;
     }
+
+    private JMenu makeHelp(Font font) {
+        JMenu help = createMenu("Help", font);
+        JMenuItem openHelp = new JMenuItem("Open help");
+        openHelp.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                URL file = Launcher.class.getResource("html/help.htm");
+                try {
+                    Desktop.getDesktop().browse(((URL) file).toURI());
+                } catch (IOException | URISyntaxException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        help.add(openHelp);
+        return help;
+    }
+
 
     private JMenu createMenu(String name, Font font){
         JMenu menu = new JMenu(name);

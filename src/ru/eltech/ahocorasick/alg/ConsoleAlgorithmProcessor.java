@@ -58,6 +58,11 @@ class StringHandler{
 }
 
 public class ConsoleAlgorithmProcessor {
+    public static void main(String[] args) {
+        ConsoleAlgorithmProcessor processor = new ConsoleAlgorithmProcessor(System.out, System.in);
+        processor.startConsole();
+    }
+
     public ConsoleAlgorithmProcessor(PrintStream ostream, InputStream istream) {
         this.ostream = ostream;
         this.istream = istream;
