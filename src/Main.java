@@ -16,6 +16,10 @@ public class Main {
         {
             ex.printStackTrace();
         }
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        int y = (int)(screen.getHeight()-550)/2;
+        int x = (int)(screen.getWidth()-1000)/2;
+        lnc.setLocation(x,y);
         SwingUtilities.invokeLater(()-> lnc.setVisible(true));
     }
 }

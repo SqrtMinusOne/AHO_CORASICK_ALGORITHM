@@ -363,12 +363,11 @@ public class Algorithm {
         return history;
     }
 
-    private static AlgorithmHistory history;
-
     public Bohr getBohr() {
         return bohr;
     }
 
+    private static AlgorithmHistory history;
     private final Bohr bohr;
     private ArrayList<String> strings;
     private ArrayList<AlgorithmResult> results;

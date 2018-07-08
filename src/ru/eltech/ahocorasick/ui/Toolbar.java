@@ -17,6 +17,7 @@ public class Toolbar extends JToolBar {
         makeOpenClose();
         makeStringButton();
         makeStepsControl();
+        makeSettingsButton();
         this.addSeparator(new Dimension(10000, 10));
     }
 
@@ -57,6 +58,11 @@ public class Toolbar extends JToolBar {
         this.addSeparator();
         this.add(makeButton(processor::restartAction, "Restart algorithm", "restart.png"));
         this.add(makeButton(processor::clearAction, "Clear", "reset.png"));
+    }
+
+    private void makeSettingsButton() {
+        this.add(makeButton(processor::openSettingsAction, "Settings", "settings.png"));
+        this.addSeparator();
     }
 
     private void makeStringButton(){

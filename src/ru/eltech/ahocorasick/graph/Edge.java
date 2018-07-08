@@ -1,5 +1,7 @@
 package ru.eltech.ahocorasick.graph;
 
+import ru.eltech.ahocorasick.Settings;
+
 public class Edge {
     /**
      * Constructor for Edge
@@ -31,19 +33,19 @@ public class Edge {
     }
 
     public float getSourceX(){
-        return source.getX() - (Vertex.size)/2 * (float) Math.sin(getAngle());
+        return source.getX() - (Settings.vertexSize())/2 * (float) Math.sin(getAngle());
     }
 
     public float getSourceY(){
-        return source.getY() - (Vertex.size)/2 * (float) Math.cos(getAngle());
+        return source.getY() - (Settings.vertexSize())/2 * (float) Math.cos(getAngle());
     }
 
     public float getDestX(){
-        return dest.getX() + (Vertex.size)/2 * (float) Math.cos(Math.PI/2 - getAngle());
+        return dest.getX() + (Settings.vertexSize())/2 * (float) Math.cos(Math.PI/2 - getAngle());
     }
 
     public float getDestY(){
-        return dest.getY() + (Vertex.size)/2 * (float) Math.sin(Math.PI/2 - getAngle());
+        return dest.getY() + (Settings.vertexSize())/2 * (float) Math.sin(Math.PI/2 - getAngle());
     }
 
     public float getAngle(){
@@ -90,8 +92,5 @@ public class Edge {
     private final Vertex source;
     private final Vertex dest;
     private final String name;
-    public static final float textDistance = 15;
-    public static final float curveCoef = 0.25f;
-    public static final float arrowSize = 10f;
 }
 

@@ -1,5 +1,7 @@
 package ru.eltech.ahocorasick.graph;
 
+import ru.eltech.ahocorasick.Settings;
+
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Vertex {
@@ -71,7 +73,7 @@ public class Vertex {
 
     public boolean isIn(float x, float y){
         double r = Math.sqrt(Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2));
-        return (r <= Vertex.size/2);
+        return (r <= Settings.vertexSize()/2);
     }
 
     public void adjust(){
@@ -86,8 +88,6 @@ public class Vertex {
     public void setHovered(boolean hovered) {
         isHovered = hovered;
     }
-
-    public static final int size = 35;
 
     public String getPopUpInfo() {
         return popUpInfo;

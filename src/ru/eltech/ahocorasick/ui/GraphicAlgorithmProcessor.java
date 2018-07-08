@@ -1,5 +1,6 @@
 package ru.eltech.ahocorasick.ui;
 
+import ru.eltech.ahocorasick.Settings;
 import ru.eltech.ahocorasick.alg.Algorithm;
 import ru.eltech.ahocorasick.alg.BohrWithGraph;
 import ru.eltech.ahocorasick.graph.Graph;
@@ -111,6 +112,7 @@ public class GraphicAlgorithmProcessor {
         if (!next){
             JOptionPane.showMessageDialog(getParentContainer(), "Algorithm is finished");
         }
+        updateSample();
     }
 
     /**
@@ -146,6 +148,7 @@ public class GraphicAlgorithmProcessor {
         ControlArea.getSrcArea().setEditable(true);
         ControlArea.getOutArea().setText(null);
         started = false;
+        updateSample();
     }
 
     /**
@@ -157,6 +160,7 @@ public class GraphicAlgorithmProcessor {
         ControlArea.getSrcArea().setEditable(true);
         ControlArea.getOutArea().setText(null);
         started = false;
+        updateSample();
     }
 
     /**
@@ -174,6 +178,7 @@ public class GraphicAlgorithmProcessor {
             graphPanel.setGraph(bohr.getGraph());
             ControlArea.getOutArea().setText(null);
             ControlArea.getOutArea().setText(algorithm.resultsToString());
+            updateSample();
         }
         else{
             JOptionPane.showMessageDialog(getParentContainer(), "Nothing to undo");
@@ -244,6 +249,7 @@ public class GraphicAlgorithmProcessor {
                 graphPanel.setGraph(bohr.getGraph());
                 ControlArea.getOutArea().setText(null);
                 ControlArea.getOutArea().setText(algorithm.resultsToString());
+                updateSample();
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
@@ -262,6 +268,7 @@ public class GraphicAlgorithmProcessor {
             graphPanel.setGraph(bohr.getGraph());
             ControlArea.getOutArea().setText(null);
             ControlArea.getOutArea().setText(algorithm.resultsToString());
+            updateSample();
         }
     }
 
@@ -303,16 +310,31 @@ public class GraphicAlgorithmProcessor {
         }
     }
 
+    void updateSample(){
+        graphPanel.setExample(getSample(Settings.sampleSize()));
+    }
+
     public String getSample(int size){
-        if (algorithm.getText().length() < size)
+        if (algorithm.getText().length() <= size)
             return algorithm.getText();
         else {
-            int start = (algorithm.getTextPosition() - size/2);
+            int pos = size/2;
+            int start = (algorithm.getTextPosition() - pos);
             start = (start < 0 ? 0 : start);
             start = (start + size > algorithm.getText().length() ?
                 algorithm.getText().length() - size - 1 : start);
-            return algorithm.getText().substring(start);
+            int end = Integer.max(start + size, algorithm.getTextPosition());
+            StringBuilder sb = new StringBuilder();
+            sb.append(algorithm.getText(), start, algorithm.getTextPosition());
+            sb.append("|");
+            sb.append(algorithm.getText(), algorithm.getTextPosition(), end);
+            return sb.toString();
         }
+    }
+
+    public void openSettingsAction(ActionEvent e){
+        JFrame settings = new SettingsFrame();
+        settings.setVisible(true);
     }
 
     private boolean started;

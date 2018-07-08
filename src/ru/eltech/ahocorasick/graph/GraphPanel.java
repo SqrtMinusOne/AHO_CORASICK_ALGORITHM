@@ -1,5 +1,7 @@
 package ru.eltech.ahocorasick.graph;
 
+import ru.eltech.ahocorasick.Settings;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Path2D;
@@ -12,6 +14,12 @@ public class GraphPanel extends JPanel implements Runnable {
     }
 
     private Graph graph;
+
+    public void setExample(String example) {
+        this.example = example;
+    }
+
+    private String example;
 
     public GraphPanel(Graph graph ) {
         this.graph = graph;
@@ -52,8 +60,8 @@ public class GraphPanel extends JPanel implements Runnable {
             float dy = vertex.getY() - vertex1.getY();
             float l = vertex.getDistanceTo(vertex1);
             if (l > 0){
-                xvel += (dx * 150) / Math.pow(l,2);
-                yvel += (dy * 150) / Math.pow(l,2);
+                xvel += (dx * Settings.vertexWeight()) / Math.pow(l,2);
+                yvel += (dy * Settings.vertexWeight()) / Math.pow(l,2);
             }
         }
 
@@ -74,7 +82,7 @@ public class GraphPanel extends JPanel implements Runnable {
         }
 
         //Calculating forces, pushing items away from the borders
-        float newBorderCoef = borderCoef/(float)Math.pow(graph.getVertices().size(), 0.3);
+        float newBorderCoef = borderCoef/(float)Math.pow(graph.getVertices().size(), 0.3) / (Settings.borderCoef() / 10);
         if (vertex.getX() < this.getWidth()/2)
             xvel += Math.pow(this.getWidth()/2 - vertex.getX(), 4)/newBorderCoef;
         else
@@ -116,7 +124,7 @@ public class GraphPanel extends JPanel implements Runnable {
                 drawVertex(g2d, vertex);
             }
         }
-
+     //   drawSample(g2d);
     }
 
     private void drawVertex(Graphics2D g, Vertex vertex) {
@@ -124,16 +132,16 @@ public class GraphPanel extends JPanel implements Runnable {
         Color[] colors = new Color[]{color.grad0t, color.grad1t};
         float[] fractions = new float[]{0, 1};
         g.setPaint(new RadialGradientPaint(vertex.getX(), vertex.getY(),
-                (float) Vertex.size/2,  vertex.getX(), vertex.getY(),
+                (float) Settings.vertexSize()/2,  vertex.getX(), vertex.getY(),
                 fractions, colors, MultipleGradientPaint.CycleMethod.NO_CYCLE));
-        g.fillOval((int) vertex.getX() - Vertex.size/2, (int) vertex.getY() - Vertex.size/2, Vertex.size, Vertex.size);
+        g.fillOval((int) vertex.getX() - Settings.vertexSize()/2, (int) vertex.getY() - Settings.vertexSize()/2, Settings.vertexSize(), Settings.vertexSize());
 
         g.setColor(color.border);
-        g.drawOval((int) vertex.getX() - Vertex.size/2, (int) vertex.getY() - Vertex.size/2, Vertex.size, Vertex.size);
+        g.drawOval((int) vertex.getX() - Settings.vertexSize()/2, (int) vertex.getY() - Settings.vertexSize()/2, Settings.vertexSize(), Settings.vertexSize());
         if (vertex.getTerminal() >= 0) {
             g.setColor(Color.black);
-            g.setFont(new Font("Calibri", Font.BOLD, (int)(Vertex.size*0.75)));
-            int d = (int)(Vertex.size * Math.sin(Math.PI/4)/2.3);
+            g.setFont(new Font("Calibri", Font.BOLD, (int)(Settings.vertexSize()*0.75)));
+            int d = (int)(Settings.vertexSize() * Math.sin(Math.PI/4)/2.3);
             g.drawString(Integer.toString(vertex.getTerminal()), (int) (vertex.getX() - d*0.7), (int) vertex.getY() + d);
         }
         if (vertex.getPopUpInfo()!=null){
@@ -198,8 +206,8 @@ public class GraphPanel extends JPanel implements Runnable {
             g2d.drawLine((int) edge.getSourceX(), (int) edge.getSourceY(), (int) edge.getDestX(), (int) edge.getDestY());
             g2d.setStroke(new BasicStroke(1));
             //Arrow
-            shiftX = edge.getDestX() + Edge.arrowSize * (float) Math.sin(edge.getAngle());
-            shiftY = edge.getDestY() + Edge.arrowSize * (float) Math.cos(edge.getAngle());
+            shiftX = edge.getDestX() + Settings.arrowSize() * (float) Math.sin(edge.getAngle());
+            shiftY = edge.getDestY() + Settings.arrowSize() * (float) Math.cos(edge.getAngle());
             arrowAngle = angle;
         }
         else{
@@ -214,15 +222,15 @@ public class GraphPanel extends JPanel implements Runnable {
             Path2D.Float curve = new Path2D.Float();
             curve.moveTo(edge.getSourceX(), edge.getSourceY());
             float l = edge.getDest().getDistanceTo(edge.getSource());
-            float bezierX = centerX + (float)(Edge.curveCoef*dCoef*Math.sin(angle))*l;
-            float bezierY = centerY + (float)(Edge.curveCoef*dCoef*Math.cos(angle))*l;
+            float bezierX = centerX + (float)(Settings.curveCoef()*dCoef*Math.sin(angle))*l;
+            float bezierY = centerY + (float)(Settings.curveCoef()*dCoef*Math.cos(angle))*l;
             curve.curveTo(edge.getSourceX(), edge.getSourceY(),
                     bezierX, bezierY, edge.getDestX(), edge.getDestY());
             g2d.setStroke(new BasicStroke(3));
             g2d.draw(curve);
             g2d.setStroke(new BasicStroke(1));
             //Arrow
-            float delta = (l - Edge.arrowSize)/l;
+            float delta = (l - Settings.arrowSize())/l;
             float t1x = (edge.getSourceX()*(1-delta) + bezierX*(delta));
             float t1y = (edge.getSourceY()*(1-delta) + bezierY*(delta));
             float t2x = (bezierX*(1-delta) + edge.getDestX()*(delta));
@@ -235,25 +243,25 @@ public class GraphPanel extends JPanel implements Runnable {
         }
 
         arrow.addPoint((int) edge.getDestX(), (int) edge.getDestY());
-        arrow.addPoint((int)(shiftX + Edge.arrowSize * Math.sin(arrowAngle)),
-                (int)(shiftY + Edge.arrowSize * Math.cos(arrowAngle)));
-        arrow.addPoint((int)(shiftX - Edge.arrowSize * Math.sin(arrowAngle)),
-                (int)(shiftY - Edge.arrowSize * Math.cos(arrowAngle)));
+        arrow.addPoint((int)(shiftX + Settings.arrowSize() * Math.sin(arrowAngle)),
+                (int)(shiftY + Settings.arrowSize() * Math.cos(arrowAngle)));
+        arrow.addPoint((int)(shiftX - Settings.arrowSize() * Math.sin(arrowAngle)),
+                (int)(shiftY - Settings.arrowSize() * Math.cos(arrowAngle)));
         g2d.fillPolygon(arrow);
         g2d.setFont(new Font("Calibri", Font.PLAIN, 20));
         g2d.drawString(edge.getName(),
-                centerX + (int)(Edge.textDistance*Math.sin(angle)),
-                centerY + (int)(Edge.textDistance*Math.cos(angle)));
+                centerX + (int)(Settings.textDistance()*Math.sin(angle)),
+                centerY + (int)(Settings.textDistance()*Math.cos(angle)));
     }
 
     private void drawPopUp(Graphics2D g2d, Vertex v){
         int width = (int)(v.getPopUpInfo().length()*5.7);
         int height = 20;
-        int x1 = (int) (v.getX() + Vertex.size/2);
-        int y1 = (int) (v.getY() + Vertex.size/2);
+        int x1 = (int) (v.getX() + Settings.vertexSize()/2);
+        int y1 = (int) (v.getY() + Settings.vertexSize()/2);
         if (x1 + width > this.getWidth()){
             x1 -= (x1 + width - this.getWidth() + 10);
-            y1 += Vertex.size*0.1;
+            y1 += Settings.vertexSize()*0.1;
         }
         g2d.setColor(Color.getHSBColor(0.58f, 0.19f, 0.89f));
         g2d.fillRoundRect(x1, y1, width, height, 4, 4);
@@ -262,6 +270,15 @@ public class GraphPanel extends JPanel implements Runnable {
         g2d.setColor(Color.getHSBColor(0,0,0.2f));
         g2d.setFont(new Font("Arial", Font.PLAIN, 13));
         g2d.drawString(v.getPopUpInfo(), x1 + 6, y1 + 14);
+    }
+
+    private void drawSample(Graphics2D g2d){
+        if (example == null)
+            return;
+        int x = 0;
+        int y = 0;
+        g2d.setColor(Color.black);
+        g2d.drawString(example, 200, 200);
     }
 
 }

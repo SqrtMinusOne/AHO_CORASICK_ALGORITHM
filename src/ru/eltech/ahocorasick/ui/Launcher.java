@@ -14,6 +14,8 @@ public class Launcher extends JFrame {
     private final ControlArea controlArea;
 
     public Launcher(){
+        super();
+        this.setTitle("Aho-Corasick algorithm");
         GraphicAlgorithmProcessor processor = new GraphicAlgorithmProcessor();
 
         JPanel graphArea = processor.getGraphPanel();
