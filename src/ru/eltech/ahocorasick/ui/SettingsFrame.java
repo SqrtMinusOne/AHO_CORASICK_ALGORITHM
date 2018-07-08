@@ -48,7 +48,7 @@ public class SettingsFrame extends JFrame {
         makeBorder("Vertex settings", vertexBox);
         vertexBox.setFont(font);
         vertexBox.add(new SettingSlider<>(Settings::setVertexSize, Settings::vertexSize, "Vertex size",
-                0, 50));
+                5, 55));
         vertexBox.add(new SettingSlider<>(Settings::setVertexWeight, Settings::vertexWeight, "Vertex weight",
                 0, 500));
         box.add(vertexBox);
@@ -61,14 +61,14 @@ public class SettingsFrame extends JFrame {
         arrowBox.add(new SettingSlider<>(Settings::setTextDistance, Settings::intTextDistance, "Text distance",
                 0, 50));
         arrowBox.add(new SettingSlider<>(Settings::setCurveCoef, Settings::intCurveCoef, "Сurvature",
-                0, 36));
+                0, 50));
         box.add(arrowBox);
 
         Box gravityBox = Box.createVerticalBox();
         makeBorder("Gravity settings", gravityBox);
         gravityBox.setFont(font);
         gravityBox.add(new SettingSlider<>(Settings::setBorderCoef, Settings::intBorderCoef, "Border repulsion",
-                1, 40));
+                1, 51));
 
         box.add(gravityBox);
 

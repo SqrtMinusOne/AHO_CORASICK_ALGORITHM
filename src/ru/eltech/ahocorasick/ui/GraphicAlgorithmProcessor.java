@@ -124,6 +124,7 @@ public class GraphicAlgorithmProcessor {
         bohr.updateStates();
         bohr.updateEdges();
         ControlArea.getOutArea().setText(algorithm.resultsToString());
+        updateSample();
     }
 
     /**

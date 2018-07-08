@@ -86,6 +86,7 @@ public class Bohr {
      */
     public void addString(String str){
         Node cur = root;
+        Bohr.nodesNumber = nodes.size();
         if (str == null)
             return;
         for (char ch : str.toCharArray()){
