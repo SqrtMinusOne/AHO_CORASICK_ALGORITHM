@@ -124,7 +124,7 @@ public class GraphPanel extends JPanel implements Runnable {
                 drawVertex(g2d, vertex);
             }
         }
-     //   drawSample(g2d);
+        drawSample(g2d);
     }
 
     private void drawVertex(Graphics2D g, Vertex vertex) {
@@ -273,12 +273,40 @@ public class GraphPanel extends JPanel implements Runnable {
     }
 
     private void drawSample(Graphics2D g2d){
-        if (example == null)
+        if ((example == null) || (example.equals("")))
             return;
-        int x = 0;
-        int y = 0;
+        int x = 20;
+        int y = 25;
+        final int c = 11;
         g2d.setColor(Color.black);
-        g2d.drawString(example, 200, 200);
+        Font font = new Font("Consolas", Font.PLAIN, 20);
+        g2d.setFont(font);
+        String str = example;
+        String[] arr = str.split("\\|");
+        if ((arr.length == 0) || (arr[0].length() == 0))
+            return;
+        else if ((arr.length == 1) && (str.startsWith("|"))) {
+            g2d.drawString(str.substring(1), x, y);
+        }
+        else  if (arr[0].length() == 1) {
+            drawSymbolSelection(g2d, x, y);
+            g2d.drawString(arr[0], x, y);
+            g2d.setColor(Color.black);
+            g2d.drawString(arr[1], x + arr[0].length() * c, y);
+        } else {
+            g2d.drawString(arr[0].substring(0, arr[0].length() - 1), x, y);
+            drawSymbolSelection(g2d, x + (arr[0].length() - 1) * c, y);
+            g2d.drawString(arr[0].substring(arr[0].length() - 1),
+                    x + (arr[0].length() - 1) * c, y);
+            g2d.setColor(Color.black);
+            if (arr.length > 1)
+                g2d.drawString(arr[1], x + arr[0].length() * c, y);
+        }
     }
 
+    private void drawSymbolSelection(Graphics2D g2d, int x, int y){
+        g2d.setColor(Color.red);
+        g2d.fillRoundRect(x, y-18, 11, 20, 2,2);
+        g2d.setColor(Color.white);
+    }
 }

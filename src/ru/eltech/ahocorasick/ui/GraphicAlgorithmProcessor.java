@@ -315,21 +315,19 @@ public class GraphicAlgorithmProcessor {
     }
 
     public String getSample(int size){
-        if (algorithm.getText().length() <= size)
-            return algorithm.getText();
-        else {
-            int pos = size/2;
-            int start = (algorithm.getTextPosition() - pos);
-            start = (start < 0 ? 0 : start);
-            start = (start + size > algorithm.getText().length() ?
-                algorithm.getText().length() - size - 1 : start);
-            int end = Integer.max(start + size, algorithm.getTextPosition());
-            StringBuilder sb = new StringBuilder();
-            sb.append(algorithm.getText(), start, algorithm.getTextPosition());
-            sb.append("|");
-            sb.append(algorithm.getText(), algorithm.getTextPosition(), end);
-            return sb.toString();
-        }
+        size--;
+        int pos = size/2;
+        int start = (algorithm.getTextPosition() - pos);
+        start = (start + size > algorithm.getText().length() ?
+                algorithm.getText().length() - size : start);
+        start = (start < 0 ? 0 : start);
+        int end = Integer.max(start + size, algorithm.getTextPosition());
+        end = Integer.min(end+1, algorithm.getText().length());
+        StringBuilder sb = new StringBuilder();
+        sb.append(algorithm.getText(), start, algorithm.getTextPosition());
+        sb.append("|");
+        sb.append(algorithm.getText(), algorithm.getTextPosition(), end);
+        return sb.toString();
     }
 
     public void openSettingsAction(ActionEvent e){
