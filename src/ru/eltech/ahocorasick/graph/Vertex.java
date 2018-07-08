@@ -79,8 +79,28 @@ public class Vertex {
         y = newY;
     }
 
+    public boolean isHovered() {
+        return isHovered;
+    }
+
+    public void setHovered(boolean hovered) {
+        isHovered = hovered;
+    }
+
     public static final int size = 35;
+
+    public String getPopUpInfo() {
+        return popUpInfo;
+    }
+
+    public void setPopUpInfo(String popUpInfo) {
+        this.popUpInfo = popUpInfo;
+    }
+
+    private String popUpInfo;
     private boolean isPressed;
+
+    private boolean isHovered;
     private states state;
 
     private float newX;

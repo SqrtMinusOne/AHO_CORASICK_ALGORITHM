@@ -105,15 +105,16 @@ public class GraphPanel extends JPanel implements Runnable {
                 this.getWidth(), this.getHeight(), Color.lightGray));
         g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
 
+        for ( Edge edge : graph.getEdges()) {
+            drawEdge(g2d, edge);
+        }
+
         if ((graph.getVertices() !=null) && (graph.getVertices().size()!=0)) {
             for (Vertex vertex : graph.getVertices()) {
                 drawVertex(g2d, vertex);
             }
         }
 
-        for ( Edge edge : graph.getEdges()) {
-            drawEdge(g2d, edge);
-        }
     }
 
     private void drawVertex(Graphics2D g, Vertex vertex) {
@@ -128,8 +129,13 @@ public class GraphPanel extends JPanel implements Runnable {
         g.setColor(color.border);
         g.drawOval((int) vertex.getX() - Vertex.size/2, (int) vertex.getY() - Vertex.size/2, Vertex.size, Vertex.size);
         if (vertex.getTerminal() >= 0) {
-            g.setColor(Color.blue);
-            g.drawString(Integer.toString(vertex.getTerminal()), (int) vertex.getX() - 3, (int) vertex.getY() + 4);
+            g.setColor(Color.black);
+            g.setFont(new Font("Calibri", Font.BOLD, (int)(Vertex.size*0.75)));
+            int d = (int)(Vertex.size * Math.sin(Math.PI/4)/2.3);
+            g.drawString(Integer.toString(vertex.getTerminal()), (int) (vertex.getX() - d*0.7), (int) vertex.getY() + d);
+        }
+        if (vertex.getPopUpInfo()!=null){
+            drawPopUp(g, vertex);
         }
     }
 
@@ -154,6 +160,9 @@ public class GraphPanel extends JPanel implements Runnable {
             float b = 1f;
             if (v.isPressed())
                 b -= 0.3f;
+            else if (v.isHovered()){
+                b -= 0.1f;
+            }
             res.grad0t = Color.getHSBColor(h,s,b);
             res.grad1t = Color.getHSBColor(h,s,b-0.1f);
             return res;
@@ -183,7 +192,9 @@ public class GraphPanel extends JPanel implements Runnable {
         if (edge.getState() == Edge.states.NORMAL) {
             //Line
             g2d.setColor(Color.black);
+            g2d.setStroke(new BasicStroke(3));
             g2d.drawLine((int) edge.getSourceX(), (int) edge.getSourceY(), (int) edge.getDestX(), (int) edge.getDestY());
+            g2d.setStroke(new BasicStroke(1));
             //Arrow
             shiftX = edge.getDestX() + Edge.arrowSize * (float) Math.sin(edge.getAngle());
             shiftY = edge.getDestY() + Edge.arrowSize * (float) Math.cos(edge.getAngle());
@@ -205,7 +216,9 @@ public class GraphPanel extends JPanel implements Runnable {
             float bezierY = centerY + (float)(Edge.curveCoef*dCoef*Math.cos(angle))*l;
             curve.curveTo(edge.getSourceX(), edge.getSourceY(),
                     bezierX, bezierY, edge.getDestX(), edge.getDestY());
+            g2d.setStroke(new BasicStroke(3));
             g2d.draw(curve);
+            g2d.setStroke(new BasicStroke(1));
             //Arrow
             float delta = (l - Edge.arrowSize)/l;
             float t1x = (edge.getSourceX()*(1-delta) + bezierX*(delta));
@@ -225,10 +238,28 @@ public class GraphPanel extends JPanel implements Runnable {
         arrow.addPoint((int)(shiftX - Edge.arrowSize * Math.sin(arrowAngle)),
                 (int)(shiftY - Edge.arrowSize * Math.cos(arrowAngle)));
         g2d.fillPolygon(arrow);
-
+        g2d.setFont(new Font("Calibri", Font.PLAIN, 20));
         g2d.drawString(edge.getName(),
                 centerX + (int)(Edge.textDistance*Math.sin(angle)),
                 centerY + (int)(Edge.textDistance*Math.cos(angle)));
+    }
+
+    private void drawPopUp(Graphics2D g2d, Vertex v){
+        int width = (int)(v.getPopUpInfo().length()*5.7);
+        int height = 20;
+        int x1 = (int) (v.getX() + Vertex.size/2);
+        int y1 = (int) (v.getY() + Vertex.size/2);
+        if (x1 + width > this.getWidth()){
+            x1 -= (x1 + width - this.getWidth() + 10);
+            y1 += Vertex.size*0.1;
+        }
+        g2d.setColor(Color.getHSBColor(0.58f, 0.19f, 0.89f));
+        g2d.fillRoundRect(x1, y1, width, height, 4, 4);
+        g2d.setColor(Color.black);
+        g2d.drawRoundRect(x1, y1, width, height, 4, 4);
+        g2d.setColor(Color.getHSBColor(0,0,0.2f));
+        g2d.setFont(new Font("Arial", Font.PLAIN, 13));
+        g2d.drawString(v.getPopUpInfo(), x1 + 6, y1 + 14);
     }
 
 }

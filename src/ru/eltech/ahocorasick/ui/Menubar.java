@@ -10,12 +10,31 @@ public class Menubar extends JMenuBar {
 
     public Menubar(GraphicAlgorithmProcessor processor){
         super();
-        Font font = new Font("Verdana", Font.PLAIN, 11);
+        Font font = new Font("Times New Roman", Font.PLAIN, 13);
         file = createMenu("File", font);
-        JMenuItem openItem = new JMenuItem("Open");
-        openItem.setFont(font);
-        file.add(openItem);
-        openItem.addActionListener(processor::openFileAction);
+        JMenu openMenu = new JMenu("Open");
+        openMenu.setFont(font);
+        file.add(openMenu);
+        JMenuItem openTextItem = new JMenuItem("Open text");
+        openTextItem.setFont(font);
+        openTextItem.addActionListener(processor::openFileAction);
+        JMenuItem openStringsItem = new JMenuItem("Open strings");
+        openStringsItem.setFont(font);
+        openStringsItem.addActionListener(processor::openStringsAction);
+        JMenuItem openGraphItem = new JMenuItem("Open graph");
+        openGraphItem.setFont(font);
+        openGraphItem.addActionListener(processor::openAlgorithmAction);
+        openMenu.add(openTextItem);
+        openMenu.add(openStringsItem);
+        openMenu.add(openGraphItem);
+        JMenuItem saveResItem = new JMenuItem("Save results");
+        saveResItem.setFont(font);
+        file.add(saveResItem);
+        saveResItem.addActionListener(processor::saveResAction);
+        JMenuItem saveGraphItem = new JMenuItem("Save graph");
+        saveGraphItem.setFont(font);
+        file.add(saveGraphItem);
+        saveGraphItem.addActionListener(processor::saveAlgorithmAction);
         file.addSeparator();
         JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.setFont(font);

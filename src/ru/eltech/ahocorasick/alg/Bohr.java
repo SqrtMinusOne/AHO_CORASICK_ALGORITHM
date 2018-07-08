@@ -47,6 +47,14 @@ public class Bohr {
         return root;
     }
 
+    public Node getNode(int num){
+        for (Node node : nodes){
+            if (node.getNodeNumber() == num)
+                return node;
+        }
+        return null;
+    }
+
     /**
      * Returns current state Node of the automate
      * @return Node

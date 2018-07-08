@@ -1,17 +1,13 @@
 package ru.eltech.ahocorasick.ui;
 
-import javafx.stage.FileChooser;
-
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.*;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 
@@ -22,7 +18,8 @@ public class ControlArea extends JPanel {
         this.processor = processor;
         initPanes();
         Box mainBox = Box.createVerticalBox();
-        mainBox.setBorder(new TitledBorder("Control components"));
+        mainBox.setBorder(new TitledBorder ( new LineBorder(Color.lightGray, 1, false), "Control components", TitledBorder.CENTER,
+                TitledBorder.DEFAULT_POSITION, new Font ( "Georgia", Font.BOLD, 12 ), Color.BLACK));
         Box openBox = createOpenBox();
         Box setupBox = createSetupBox();
         Box stepsBox = createStepsBox();
@@ -31,7 +28,9 @@ public class ControlArea extends JPanel {
         mainBox.add(setupBox);
         mainBox.add(stepsBox);
         mainBox.add(clearAndExitBox);
+        mainBox.setMaximumSize(new Dimension(300, 100));
         add(mainBox);
+        this.setMaximumSize(new Dimension(300, 1024));
     }
 
     /**
@@ -40,10 +39,12 @@ public class ControlArea extends JPanel {
     private void initPanes() {
         JScrollPane srcPane = new JScrollPane(srcArea);
         srcPane.setPreferredSize(new Dimension(100, 200));
-        srcPane.setBorder(new TitledBorder("Source text"));
+        srcPane.setBorder(new TitledBorder ( new LineBorder(Color.lightGray, 1, false), "Source text", TitledBorder.CENTER,
+                TitledBorder.DEFAULT_POSITION, new Font ( "Georgia", Font.BOLD, 12 ), Color.BLACK ));
         JScrollPane outPane = new JScrollPane(outArea);
         outPane.setPreferredSize(new Dimension(100, 200));
-        outPane.setBorder(new TitledBorder("Output text"));
+        outPane.setBorder(new TitledBorder ( new LineBorder(Color.lightGray, 1, false), "Output text", TitledBorder.CENTER,
+                TitledBorder.DEFAULT_POSITION, new Font ( "Georgia", Font.BOLD, 12 ), Color.BLACK ));
         add(srcPane);
         add(outPane);
     }
@@ -139,9 +140,9 @@ public class ControlArea extends JPanel {
     /**
      * Writes file to SrcArea
      * @param file input file
-     * @throws FileNotFoundException if file was not found
+     * @throws IOException in case of in/out problem
      */
-    public static void writeToSrcArea(File file) throws FileNotFoundException {
+    public static void writeToSrcArea(File file) throws IOException {
 
         String str = file.toString();
         FileReader fr = new FileReader(str);
@@ -150,8 +151,20 @@ public class ControlArea extends JPanel {
         while(scanner.hasNextLine()){
             flContent.append(scanner.nextLine());
         }
-
         srcArea.append(flContent.toString());
+        fr.close();
+    }
+
+    /**
+     * Saves into file from SrcArea and OutArea
+     * @param file input file
+     * @throws IOException in case of in/out problem
+     */
+    public static void saveFromOutArea(File file) throws IOException{
+        FileWriter fw = new FileWriter(file);
+        fw.write("Source text:\n" + srcArea.getText() + "\n\n");
+        fw.write("Results:\n" + outArea.getText());
+        fw.close();
     }
 
     /**

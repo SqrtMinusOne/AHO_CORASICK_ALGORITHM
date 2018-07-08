@@ -41,7 +41,7 @@ public class BohrWithGraph extends Bohr {
         bohr.getGraph().getVertices().clear();
         String[] arr = str.split("\n");
         int ind = 1;
-        while ((!arr[ind].startsWith("}")) && (ind < arr.length))  {
+        while ((!arr[ind].startsWith("}")))  {
             if (!arr[ind].startsWith("[")){
                 ind++;
                 continue;

@@ -1,8 +1,10 @@
 package ru.eltech.ahocorasick.ui;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.io.IOException;
 
 
 public class Launcher extends JFrame {
@@ -14,16 +16,23 @@ public class Launcher extends JFrame {
     private final ControlArea controlArea;
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(()-> new Launcher().setVisible(true));
+        Launcher lnc = new Launcher();
+        try {
+            Image icon = ImageIO.read(Launcher.class.getResourceAsStream("icon.png"));
+            lnc.setIconImage(icon);
+        }
+        catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        SwingUtilities.invokeLater(()-> lnc.setVisible(true));
     }
 
     private Launcher(){
         GraphicAlgorithmProcessor processor = new GraphicAlgorithmProcessor();
 
         JPanel graphArea = processor.getGraphPanel();
-        graphArea.setBorder(new LineBorder(Color.BLACK, 5));
-        graphArea.setPreferredSize(new Dimension(700, 550));
-        graphArea.setBackground(Color.white); //temporary colour
+        graphArea.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
 
         controlArea = new ControlArea(processor);
         controlArea.setLayout(new BoxLayout(controlArea, BoxLayout.Y_AXIS)); // stretching
@@ -32,17 +41,24 @@ public class Launcher extends JFrame {
         Menubar menubar = new Menubar(processor);
         menubar.setMaximumSize(new Dimension( 100000, 10));
 
+        JPanel graphMenuPanel = new JPanel();
+        graphMenuPanel.setLayout(new BoxLayout(graphMenuPanel, BoxLayout.Y_AXIS));
+
+        Toolbar toolbar = new Toolbar(processor);
+        graphMenuPanel.add(toolbar, BorderLayout.NORTH);
+        graphMenuPanel.add(graphArea, BorderLayout.SOUTH);
+        graphMenuPanel.setPreferredSize(new Dimension(700, 550));
+
         JPanel rootWithmenu = new JPanel();
         JPanel rootWindow = new JPanel();
+
         rootWithmenu.setLayout(new BoxLayout(rootWithmenu, BoxLayout.Y_AXIS));
         rootWithmenu.add(menubar, BorderLayout.NORTH);
         rootWithmenu.add(rootWindow, BorderLayout.SOUTH);
-        //rootWindow.setVisible(true);
+
         rootWindow.setLayout(new BoxLayout(rootWindow, BoxLayout.X_AXIS));
         rootWindow.setPreferredSize(new Dimension(1000, 550));
-        //rootWindow.add(menubar, BorderLayout.NORTH);
-        rootWindow.add(graphArea, BorderLayout.WEST);
-        rootWindow.add(Box.createHorizontalStrut(5), BorderLayout.CENTER);
+        rootWindow.add(graphMenuPanel, BorderLayout.WEST);
         rootWindow.add(controlArea, BorderLayout.EAST);
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
