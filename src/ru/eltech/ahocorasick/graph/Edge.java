@@ -8,11 +8,14 @@ public class Edge {
      * @param name Name of Edge
      */
     public Edge (Vertex source, Vertex dest, String name ) {
+        this(source, dest, name, states.NORMAL);
+    }
 
+    public Edge(Vertex source, Vertex dest, String name, states state) {
+        this.state = state;
         this.source = source;
         this.dest = dest;
         this.name = name;
-
     }
 
     /**
@@ -46,6 +49,11 @@ public class Edge {
     public float getAngle(){
         float dy = source.getY() - dest.getY();
         float dx = source.getX() - dest.getX();
+        double res = getAngle(dx, dy);
+        return (float) res;
+    }
+
+    public static double getAngle(float dx, float dy) {
         double res;
         if ((dy > 0) && (dx > 0))
             res =  Math.atan(dx/dy);
@@ -57,7 +65,7 @@ public class Edge {
             res = Math.PI/2;
         else
             res = 3*Math.PI/2;
-        return (float) res;
+        return res;
     }
 
     public Vertex getSource() {
@@ -72,9 +80,18 @@ public class Edge {
         return name;
     }
 
+    public enum states {NORMAL, ROUND1, ROUND2}
+
+    public states getState() {
+        return state;
+    }
+
+    private final states state;
     private final Vertex source;
     private final Vertex dest;
     private final String name;
     public static final float textDistance = 15;
+    public static final float curveCoef = 0.25f;
+    public static final float arrowSize = 10f;
 }
 

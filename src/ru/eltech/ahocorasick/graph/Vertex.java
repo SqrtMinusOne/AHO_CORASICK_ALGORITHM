@@ -89,6 +89,11 @@ public class Vertex {
     private float x;
     private float y;
 
+    @Override
+    public String toString() {
+        return "[" + (int)x + " " + (int)y + "]";
+    }
+
     private int terminal = -1;
     private int id;
 }

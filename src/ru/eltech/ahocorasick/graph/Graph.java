@@ -27,17 +27,31 @@ public class Graph {
     }
 
     public Edge createEdge ( int idOne, int idTwo, String name ) {
-        Vertex one = getVertexByID( idOne );
-        Vertex two = getVertexByID( idTwo );
-        return createEdge( one, two, name );
+        return createEdge( idOne, idTwo, name , Edge.states.NORMAL);
     }
 
-    public Edge createEdge ( Vertex one, Vertex two, String name ) {
-        Edge edge = new Edge ( one, two, name );
+    public void addVertex(Vertex v){
+        getVertices().add( v );
+    }
+
+    public Edge createEdge(int idOne, int idTwo, String name, Edge.states state) {
+        Vertex one = getVertexByID( idOne );
+        Vertex two = getVertexByID( idTwo );
+        Edge edge = new Edge ( one, two, name, state );
         one.getEdges().add( edge );
         two.getEdges().add( edge );
         getEdges().add( edge );
         return edge;
+    }
+
+    public Edge getEdge(int idOne, int idTwo){
+        Vertex one = getVertexByID( idOne );
+        Vertex two = getVertexByID( idTwo );
+        for (Edge edge : edges){
+            if ((edge.getSource() == one) && (edge.getDest() == two))
+                    return edge;
+        }
+        return null;
     }
 
     public synchronized CopyOnWriteArrayList<Edge> getEdges() {
@@ -56,4 +70,6 @@ public class Graph {
         vertices.clear();
         edges.clear();
     }
+
+
 }

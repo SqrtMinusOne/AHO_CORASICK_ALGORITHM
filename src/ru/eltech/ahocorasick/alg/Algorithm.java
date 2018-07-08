@@ -165,17 +165,16 @@ public class Algorithm {
     public void finishAlgorithm() {
         boolean fin;
         do{
-            fin = doStep();
+            fin = doStep(false);
         } while(fin);
     }
 
     @Override
     public String toString() {
-        String sb = bohr.toString() +
+        return bohr.toString() +
                 "\ntextPosition = " + textPosition +
                 "\ntext = " + text +
-                "\n" + resultsToString() + "\nEND";
-        return sb;
+                "\n" + rawResultsToString() + "\nEND";
 
     }
 
@@ -183,7 +182,7 @@ public class Algorithm {
      * Converts results array to more compact String
      * @return String of results in form [index:patternNumber]
      */
-    public String resultsToString(){
+    private String rawResultsToString(){
         if (results == null)
             return "null";
         StringBuilder sb = new StringBuilder();
@@ -194,7 +193,21 @@ public class Algorithm {
     }
 
     /**
-     * Converts string, received from resultsToString, to array of results
+     * Processes results and returns them in the String form
+     * @return String of results in form [index:patternNumber]
+     */
+    public String resultsToString(){
+        if (results == null)
+            return "null";
+        StringBuilder sb = new StringBuilder();
+        for (AlgorithmResult res : processResults(results)) {
+            sb.append("[").append(res.getIndex()).append(":").append(res.getPatternNumber()).append("] ");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Converts string, received from rawResultsToString, to array of results
      * @param str string with results in form [index:patternNumber]
      * @return ArrayList of AlgorithmResult
      */
@@ -218,32 +231,38 @@ public class Algorithm {
      * @return Algorithm
      */
     public static Algorithm fromString(String str){
-        Algorithm alg = new Algorithm(Bohr.fromString(str));
+        Algorithm alg;
+        if (str.startsWith("BohrWithoutGraph")) {
+            alg = new Algorithm(Bohr.fromString(str));
+        }
+        else {
+            alg = new Algorithm(BohrWithGraph.fromString(str));
+        }
         String[] arr = str.split("\n");
         try {
             alg.textPosition = Integer.valueOf(arr[arr.length - 4].substring(15));
         }
         catch (Exception e){
-            alg.textPosition = -1;
+            alg.textPosition = 0;
         }
         try {
             alg.text = arr[arr.length - 3].substring(7);
         }
         catch (StringIndexOutOfBoundsException e){
-            alg.text = null;
+            alg.text = "";
         }
         try {
             alg.results = resultsFromString(arr[arr.length - 2]);
         }
         catch (Exception e){
-            alg.results = null;
+            alg.results = new ArrayList<>();
         }
         try {
             alg.strings = new ArrayList<>();
             Collections.addAll(alg.strings, alg.bohr.getStringArray());
         }
         catch (Exception e){
-            alg.strings = null;
+            alg.strings = new ArrayList<>();
         }
         return alg;
     }
@@ -345,6 +364,11 @@ public class Algorithm {
     }
 
     private static AlgorithmHistory history;
+
+    public Bohr getBohr() {
+        return bohr;
+    }
+
     private final Bohr bohr;
     private ArrayList<String> strings;
     private ArrayList<AlgorithmResult> results;
